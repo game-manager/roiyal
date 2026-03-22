@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ROYALE — Casino</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090e;
+  --surface:#0f1018;
+  --surface2:#161821;
+  --surface3:#1d2030;
+  --border:rgba(212,175,100,0.12);
+  --border2:rgba(212,175,100,0.25);
+  --border3:rgba(212,175,100,0.45);
+  --gold:#c9a84c;
+  --gold2:#e8c97a;
+  --gold3:#f5e0a8;
+  --gold-dim:rgba(201,168,76,0.15);
+  --green:#2ecc8e;
+  --red:#e05555;
+  --blue:#5b8dee;
+  --text:#ede8dc;
+  --muted:#6b6657;
+  --muted2:#9a9283;
+  --radius:12px;
+  --radius-sm:7px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Tenor Sans',serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(ellipse 120% 60% at 50% 0%,rgba(201,168,76,0.06) 0%,transparent 70%),
+    radial-gradient(ellipse 80% 40% at 80% 100%,rgba(201,168,76,0.04) 0%,transparent 60%);
+}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.2);border-radius:2px}
+
+/* ── TYPOGRAPHY ── */
+.display{font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:-.01em}
+.mono{font-family:'DM Mono',monospace}
+.label-xs{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.label-sm{font-family:'Tenor Sans',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+
+/* ── UTILS ── */
+.hidden{display:none!important}
+.w-full{width:100%}
+
+/* ── GOLD LINE ── */
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 24px;border-radius:var(--radius-sm);border:none;
+  cursor:pointer;font-family:'Tenor Sans',serif;font-size:14px;
+  transition:all .18s ease;white-space:nowrap;
+  user-select:none;-webkit-tap-highlight-color:transparent;letter-spacing:.06em;
+}
+.btn:active{transform:scale(.97)}
+.btn-gold{
+  background:linear-gradient(135deg,#7a5c1a,#c9a84c,#e8c97a,#c9a84c,#7a5c1a);
+  background-size:200% 100%;
+  color:#09090e;font-weight:700;
+  box-shadow:0 4px 24px rgba(201,168,76,.3),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:all .3s ease;
+}
+.btn-gold:hover{background-position:100% 0;box-shadow:0 6px 32px rgba(201,168,76,.5)}
+.btn-gold:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{
+  background:transparent;border:1px solid var(--border2);
+  color:var(--muted2);transition:all .2s;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.btn-danger{
+  background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.3);color:var(--red);
+}
+.btn-danger:hover{background:rgba(224,85,85,.18)}
+.btn-success{
+  background:rgba(46,204,142,.1);border:1px solid rgba(46,204,142,.3);color:var(--green);
+}
+.btn-success:hover{background:rgba(46,204,142,.18)}
+.btn-lg{padding:15px 36px;font-size:15px;border-radius:10px;letter-spacing:.12em}
+.btn-sm{padding:7px 14px;font-size:12px;letter-spacing:.05em}
+.btn-icon{width:38px;height:38px;padding:0;border-radius:9px;font-size:16px}
+
+/* ── INPUT ── */
+.input{
+  width:100%;padding:12px 14px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);
+  font-family:'Tenor Sans',serif;font-size:14px;
+  outline:none;transition:border-color .15s;letter-spacing:.04em;
+}
+.input:focus{border-color:var(--gold)}
+.input::placeholder{color:var(--muted)}
+.lbl{display:block;font-size:10px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-bottom:7px}
+
+/* ── CARD ── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px;
+  box-shadow:0 2px 24px rgba(0,0,0,.4);
+}
+
+/* ── BADGE / RANK ── */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+}
+.badge-bronze {background:rgba(205,127,50,.12);color:#cd7f32;border:1px solid rgba(205,127,50,.3)}
+.badge-silver {background:rgba(180,188,200,.1); color:#b0b8c8;border:1px solid rgba(180,188,200,.25)}
+.badge-gold   {background:rgba(201,168,76,.12); color:var(--gold2);border:1px solid rgba(201,168,76,.3)}
+.badge-platinum{background:rgba(100,200,220,.08);color:#67e8f9;border:1px solid rgba(100,200,220,.25)}
+.badge-diamond{background:rgba(192,132,252,.1); color:#c084fc;border:1px solid rgba(192,132,252,.25)}
+.badge-legend {background:rgba(232,96,96,.1);   color:#fb7185;border:1px solid rgba(232,96,96,.3);
+               animation:legendGlow 2s ease-in-out infinite}
+@keyframes legendGlow{0%,100%{box-shadow:0 0 8px rgba(251,113,133,.2)}50%{box-shadow:0 0 20px rgba(251,113,133,.5)}}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:11px 20px;
+  font-size:13px;letter-spacing:.04em;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  z-index:9999;opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.win{border-color:rgba(46,204,142,.4);color:var(--green)}
+.toast.loss{border-color:rgba(224,85,85,.25);color:var(--muted2)}
+
+/* ── RANK-UP ── */
+.rankup-overlay{
+  position:fixed;inset:0;z-index:9990;
+  background:rgba(0,0,0,.82);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.rankup-overlay.show{opacity:1;pointer-events:all}
+.rankup-card{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:20px;padding:44px 64px;text-align:center;
+  transform:scale(.85);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 80px rgba(201,168,76,.12),0 24px 80px rgba(0,0,0,.7);
+}
+.rankup-overlay.show .rankup-card{transform:scale(1)}
+.rankup-emoji{font-size:60px;margin-bottom:14px}
+.rankup-lbl{font-size:10px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.rankup-name{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--gold2)}
+
+/* ══════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════ */
+#auth-overlay{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;
+}
+.auth-wrap{width:100%;max-width:400px;animation:fadeUp .5s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.auth-logo{text-align:center;margin-bottom:36px}
+.auth-crest{
+  width:64px;height:64px;margin:0 auto 16px;
+  border:1px solid var(--border2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  background:radial-gradient(circle at 40% 30%,rgba(201,168,76,.1),transparent);
+}
+.auth-brand{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;
+  background:linear-gradient(135deg,var(--gold),var(--gold3),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:.12em}
+.auth-brand-sub{font-size:10px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin-top:5px}
+.auth-tabs{display:flex;gap:3px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:22px}
+.auth-tab{
+  flex:1;padding:10px;border:none;border-radius:6px;
+  background:transparent;color:var(--muted);
+  font-family:'Tenor Sans',serif;font-size:13px;letter-spacing:.06em;cursor:pointer;transition:all .2s;
+}
+.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.auth-form{display:none}
+.auth-form.active{display:block}
+.auth-field{margin-bottom:15px}
+.auth-err{background:rgba(224,85,85,.08);border:1px solid rgba(224,85,85,.25);
+  border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
+.auth-ok{background:rgba(46,204,142,.08);border:1px solid rgba(46,204,142,.25);
+  border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--green);margin-bottom:14px;display:none}
+.tos-box{
+  height:176px;overflow-y:scroll;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:15px;font-size:12px;line-height:1.75;color:var(--muted2);margin-bottom:9px;
+}
+.tos-box::-webkit-scrollbar{width:2px}
+.tos-box::-webkit-scrollbar-thumb{background:var(--border2)}
+.tos-art{margin-bottom:13px}
+.tos-art h4{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase}
+.tos-art p strong{color:var(--text)}
+.tos-hint{font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px}
+.tos-done{font-size:11px;color:var(--green);text-align:center;margin-bottom:8px;display:none}
+.tos-chk-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:15px;cursor:pointer;
+}
+.tos-chk-row input{accent-color:var(--gold);width:15px;height:15px;flex-shrink:0}
+.tos-chk-row label{font-size:12px;color:var(--muted2);cursor:pointer;letter-spacing:.04em}
+
+/* ══════════════════════════════════════════════
+   APP LAYOUT
+══════════════════════════════════════════════ */
+#app{display:none;min-height:100vh;flex-direction:column}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(9,9,14,.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;height:58px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.topbar-brand{
+  font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;
+  letter-spacing:.14em;color:var(--gold2);flex-shrink:0;
+}
+.topbar-rank{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
+.xp-bar-outer{width:72px;height:3px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.xp-bar-inner{height:100%;border-radius:2px;background:var(--gold);transition:width .5s ease}
+.xp-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em}
+.balance-pill{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:5px 13px;
+  display:flex;align-items:center;gap:5px;
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:500;
+  color:var(--gold2);white-space:nowrap;letter-spacing:.03em;
+}
+.topbar-acts{display:flex;align-items:center;gap:4px}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(9,9,14,.96);backdrop-filter:blur(14px);
+  border-top:1px solid var(--border);display:flex;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:10px 4px;background:none;border:none;cursor:pointer;
+  color:var(--muted);transition:color .18s;gap:3px;
+  -webkit-tap-highlight-color:transparent;
+}
+.nav-item.active{color:var(--gold)}
+.nav-item:hover{color:var(--muted2)}
+.nav-item.active:hover{color:var(--gold)}
+.nav-icon{font-size:19px;line-height:1}
+.nav-lbl{font-size:9px;font-family:'Tenor Sans',serif;letter-spacing:.1em;text-transform:uppercase}
+
+/* MAIN */
+.main{
+  flex:1;padding:22px 16px calc(84px + env(safe-area-inset-bottom,0px));
+  max-width:580px;margin:0 auto;width:100%;
+}
+.screen{display:none;animation:fadeUp .22s ease-out}
+.screen.active{display:block}
+.screen-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;
+  color:var(--gold2);letter-spacing:.04em;margin-bottom:3px}
+.screen-sub{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:22px}
+
+/* ── LOBBY GAME CARDS ── */
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.game-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 15px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.game-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--card-gold,var(--gold)),transparent);
+  transform:scaleX(0);transform-origin:center;transition:transform .25s;
+}
+.game-card:hover::after,.game-card:active::after{transform:scaleX(1)}
+.game-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.game-card:active{transform:translateY(0)}
+.game-card-icon{font-size:30px;margin-bottom:10px;line-height:1}
+.game-card-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;
+  color:var(--gold3);margin-bottom:3px;letter-spacing:.04em}
+.game-card-desc{font-size:11px;color:var(--muted);line-height:1.4;letter-spacing:.03em}
+.game-card-tag{
+  position:absolute;top:10px;right:10px;
+  font-size:8px;font-weight:700;letter-spacing:.1em;
+  padding:2px 7px;border-radius:10px;text-transform:uppercase;
+  background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.2);
+}
+
+/* ── GAME SCREEN ── */
+.game-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.back-btn{
+  width:36px;height:36px;flex-shrink:0;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:9px;font-size:16px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;color:var(--muted2);
+}
+.back-btn:hover{border-color:var(--border2);color:var(--text)}
+.game-header-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;
+  color:var(--gold2);letter-spacing:.06em}
+.game-header-sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+
+/* Rule box */
+.rule-box{
+  background:rgba(201,168,76,.04);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px 15px;margin-bottom:16px;
+  font-size:12px;color:var(--muted2);line-height:1.65;letter-spacing:.03em;
+}
+.rule-box summary{
+  font-size:12px;font-weight:600;color:var(--gold);cursor:pointer;
+  user-select:none;list-style:none;display:flex;align-items:center;gap:6px;letter-spacing:.06em;
+}
+.rule-box summary::after{content:'▾';font-size:11px;color:var(--muted)}
+details[open] .rule-box summary::after{content:'▴'}
+.rule-box p{margin-top:10px}
+
+/* Bet row */
+.bet-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:14px;
+}
+.bet-lbl{font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;flex-shrink:0}
+.bet-amt{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--gold2)}
+.stepper{width:33px;height:33px;background:var(--surface);border:1px solid var(--border);
+  border-radius:7px;font-size:17px;font-weight:700;color:var(--muted2);
+  cursor:pointer;transition:all .14s;display:flex;align-items:center;justify-content:center}
+.stepper:hover{border-color:var(--gold);color:var(--gold)}
+.stepper:active{transform:scale(.92)}
+
+/* Result msg */
+.result-msg{text-align:center;min-height:26px;padding:5px 0;
+  font-size:14px;letter-spacing:.04em;transition:all .22s;font-family:'Tenor Sans',serif}
+.result-msg.win{color:var(--green)}
+.result-msg.loss{color:var(--muted)}
+.result-msg.neutral{color:var(--muted2)}
+
+/* ══════════════════ SLOTS ══════════════════ */
+.slot-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:26px 18px 22px;margin-bottom:14px;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.3);
+}
+.reels{display:flex;justify-content:center;gap:8px;margin-bottom:18px}
+.reel-win{
+  width:86px;height:86px;background:var(--bg);border:1px solid var(--border2);
+  border-radius:10px;overflow:hidden;position:relative;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.6);
+}
+.reel-win::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(9,9,14,.65) 0%,transparent 28%,transparent 72%,rgba(9,9,14,.65) 100%);
+  pointer-events:none;z-index:2;
+}
+.reel-inner{position:absolute;width:100%;display:flex;flex-direction:column}
+.reel-sym{width:86px;height:86px;display:flex;align-items:center;justify-content:center;font-size:38px;flex-shrink:0}
+.paytable-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:14px}
+.pay-row{
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:7px 11px;display:flex;align-items:center;justify-content:space-between;font-size:12px;
+}
+.pay-mult{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--gold)}
+
+/* ══════════════════ ROULETTE ══════════════════ */
+.roulette-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px 18px;margin-bottom:14px;
+}
+.wheel-area{display:flex;justify-content:center;margin-bottom:14px}
+.wheel-svg-wrap{position:relative;width:170px;height:170px}
+.wheel-svg{width:170px;height:170px;transition:transform 4s cubic-bezier(.17,.67,.12,.99)}
+.wheel-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:34px;height:34px;background:var(--surface);border:2px solid var(--border2);border-radius:50%;z-index:3;
+}
+.wheel-pointer{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;
+  border-top:16px solid var(--gold);z-index:4;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));
+}
+.result-number-big{
+  font-family:'Cormorant Garamond',serif;font-weight:700;font-size:52px;line-height:1;
+  min-height:54px;transition:color .3s;letter-spacing:-.02em;text-align:center;
+}
+.result-number-big.r{color:var(--red)}
+.result-number-big.b{color:var(--muted2)}
+.result-number-big.g{color:var(--green)}
+.result-color-label{font-size:10px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;text-align:center;margin-top:4px}
+.rbet-section-label{font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.rbet-grid{display:grid;gap:5px;margin-bottom:10px}
+.rbet-grid-3{grid-template-columns:repeat(3,1fr)}
+.rbet-grid-2{grid-template-columns:repeat(2,1fr)}
+.rbet-btn{
+  padding:9px 7px;text-align:center;
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .14s;
+  font-family:'Tenor Sans',serif;font-size:11px;letter-spacing:.06em;
+  color:var(--muted2);position:relative;
+}
+.rbet-btn:hover{border-color:var(--border2);color:var(--text)}
+.rbet-btn.sel{border-color:var(--gold);background:rgba(201,168,76,.08);color:var(--gold2)}
+.rbet-odds{font-size:9px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.num-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px}
+.num-btn{
+  aspect-ratio:1;border-radius:5px;border:1px solid transparent;
+  font-size:10px;font-weight:600;font-family:'DM Mono',monospace;
+  cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;
+}
+.num-btn.nr{background:rgba(224,85,85,.18);color:#f08080}
+.num-btn.nb{background:rgba(100,116,139,.18);color:var(--muted2)}
+.num-btn.ng{background:rgba(46,204,142,.13);color:var(--green)}
+.num-btn:hover,.num-btn.sel{border-color:var(--gold);transform:scale(1.1);box-shadow:0 0 8px rgba(201,168,76,.3)}
+.num-btn.sel{background:rgba(201,168,76,.18);color:var(--gold2)}
+.roulette-hist{display:flex;gap:3px;flex-wrap:wrap;margin-top:10px;justify-content:center}
+.hist-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:'DM Mono',monospace;font-weight:700}
+.hist-dot.r{background:rgba(224,85,85,.2);color:var(--red)}
+.hist-dot.b{background:rgba(100,116,139,.18);color:var(--muted2)}
+.hist-dot.g{background:rgba(46,204,142,.13);color:var(--green)}
+
+/* ══════════════════ HI-LO ══════════════════ */
+.hilo-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:26px 18px;margin-bottom:14px;text-align:center;
+}
+.hilo-card-display{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:18px}
+.hilo-card-big{
+  width:86px;height:122px;background:#fff;border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:17px;font-weight:800;color:#111;box-shadow:0 6px 24px rgba(0,0,0,.5);gap:3px;
+  animation:dealAnim .3s ease-out;
+}
+@keyframes dealAnim{from{opacity:0;transform:translateY(-14px) rotate(-3deg)}to{opacity:1;transform:none}}
+.hilo-card-big.red{color:#dc2626}
+.hilo-card-big-suit{font-size:30px}
+.hilo-vs{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.1em}
+.hilo-btn-row{display:flex;gap:10px;justify-content:center}
+.hilo-btn{
+  flex:1;max-width:128px;padding:13px;border-radius:10px;font-size:20px;cursor:pointer;
+  border:1px solid var(--border);background:var(--bg);transition:all .14s;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.hilo-btn span{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.hilo-btn:hover{transform:translateY(-2px)}
+.hilo-btn.higher:hover{border-color:var(--green);background:rgba(46,204,142,.07)}
+.hilo-btn.lower:hover{border-color:var(--red);background:rgba(224,85,85,.07)}
+.hilo-streak{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-top:10px}
+.hilo-streak span{color:var(--gold);font-weight:700}
+
+/* ══════════════════ COIN FLIP ══════════════════ */
+.coin-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:30px 18px;margin-bottom:14px;text-align:center;
+}
+.coin{
+  width:96px;height:96px;margin:0 auto 22px;border-radius:50%;font-size:42px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border2);background:var(--surface2);transition:all .3s;
+}
+.coin.flipping{animation:coinFlip .6s ease-in-out}
+@keyframes coinFlip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg) scale(.8)}100%{transform:rotateY(0)}}
+.coin-choice-row{display:flex;gap:10px;justify-content:center;margin-bottom:18px}
+.coin-choice{
+  flex:1;max-width:136px;padding:13px 9px;
+  border:1px solid var(--border);border-radius:10px;background:var(--bg);
+  cursor:pointer;transition:all .14s;font-size:22px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.coin-choice span{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.coin-choice.sel{border-color:var(--gold);background:rgba(201,168,76,.08)}
+.coin-choice:hover{border-color:var(--border2)}
+.coin-stats{display:flex;justify-content:center;gap:24px;margin-top:14px}
+.coin-stat{text-align:center}
+.coin-stat-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:500}
+.coin-stat-val.w{color:var(--green)}.coin-stat-val.l{color:var(--red)}
+.coin-stat-label{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.1em;text-transform:uppercase}
+
+/* ══════════════════ HORSE RACING ══════════════════ */
+.race-track{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;margin-bottom:14px;
+}
+.race-track-inner{
+  position:relative;height:216px;
+  background:linear-gradient(180deg,#071a07,#0d2e0d,#071a07);
+  border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.05);
+}
+.race-lane{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.05)}
+.finish-line{
+  position:absolute;top:0;bottom:0;right:56px;width:3px;
+  background:repeating-linear-gradient(180deg,#fff 0,#fff 7px,transparent 7px,transparent 14px);
+  opacity:.4;z-index:2;
+}
+.horse-lane{position:absolute;left:0;right:0;height:36px;display:flex;align-items:center}
+.horse-emoji{position:absolute;left:10px;font-size:20px;transition:left .08s linear;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));z-index:3}
+.horse-name-label{position:absolute;left:10px;font-size:8px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.04em;top:2px;z-index:3;pointer-events:none;font-family:'DM Mono',monospace}
+.winner-banner{
+  position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.78);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:5px;
+}
+.winner-banner.show{display:flex}
+.winner-banner-title{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;font-family:'Tenor Sans',serif}
+.winner-banner-horse{font-size:34px}
+.winner-banner-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold3)}
+.odds-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
+.odds-card{
+  background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:11px;cursor:pointer;transition:all .14s;position:relative;
+}
+.odds-card:hover{border-color:var(--border2)}
+.odds-card.sel{border-color:var(--gold);background:rgba(201,168,76,.06)}
+.odds-card.winner-card{border-color:var(--gold2);background:rgba(201,168,76,.06)}
+.odds-card-top{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.odds-horse-icon{font-size:20px}
+.odds-horse-name{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em}
+.odds-horse-trait{font-size:10px;color:var(--muted);line-height:1.3;letter-spacing:.03em}
+.odds-value{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--gold2)}
+.odds-label{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.odds-bar{height:2px;background:var(--surface2);border-radius:2px;margin-top:7px;overflow:hidden}
+.odds-bar-fill{height:100%;border-radius:2px}
+.race-pos-badge{position:absolute;top:7px;right:8px;font-size:13px;font-weight:800;opacity:0;transition:opacity .3s}
+.odds-card.winner-card .race-pos-badge{opacity:1}
+.race-status{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 13px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);margin-bottom:10px;font-size:12px;letter-spacing:.04em;
+}
+.race-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}
+.race-dot.running{background:var(--green);animation:dotBlink .8s ease-in-out infinite}
+@keyframes dotBlink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ══════════════════ RANKING ══════════════════ */
+.rank-header-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;margin-bottom:14px;display:flex;align-items:center;gap:14px;
+}
+.rank-header-left{flex:1}
+.rank-header-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold2);margin-bottom:4px;letter-spacing:.04em}
+.rank-header-xp{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:7px}
+.rank-bar-outer{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.rank-bar-fill{height:100%;border-radius:2px;background:var(--gold);transition:width .5s ease}
+.rank-icon{font-size:42px;flex-shrink:0}
+.lb-list{display:flex;flex-direction:column;gap:5px}
+.lb-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:12px 15px;display:flex;align-items:center;gap:11px;transition:border-color .14s;
+}
+.lb-item.me{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.03)}
+.lb-pos{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--muted);width:30px;text-align:center;flex-shrink:0}
+.lb-pos.p1{color:var(--gold2)}.lb-pos.p2{color:var(--muted2)}.lb-pos.p3{color:#cd7f32}
+.lb-info{flex:1}
+.lb-name{font-size:14px;font-weight:600;margin-bottom:3px;letter-spacing:.03em}
+.lb-xp{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)}
+.lb-balance{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--green)}
+
+/* ══════════════════ BANK ══════════════════ */
+.bank-header{
+  background:linear-gradient(135deg,#071a10,#0e2a18,#071a10);
+  border:1px solid rgba(46,204,142,.18);border-radius:var(--radius);
+  padding:20px;margin-bottom:14px;position:relative;overflow:hidden;
+}
+.bank-header::before{content:'🏦';position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:48px;opacity:.07}
+.bank-header-lbl{font-size:10px;letter-spacing:.16em;color:rgba(46,204,142,.6);text-transform:uppercase;margin-bottom:4px}
+.bank-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--green)}
+.bank-rate{display:inline-flex;align-items:center;gap:5px;background:rgba(46,204,142,.08);border:1px solid rgba(46,204,142,.18);border-radius:20px;padding:4px 12px;margin-top:9px;font-size:11px;color:var(--green);letter-spacing:.04em}
+.bank-loan-card{
+  background:rgba(224,85,85,.04);border:1px solid rgba(224,85,85,.18);
+  border-radius:var(--radius);padding:17px 18px;margin-bottom:14px;position:relative;overflow:hidden;
+}
+.bank-loan-card.urgent{border-color:rgba(224,85,85,.45);animation:urgentPulse 2s ease-in-out infinite}
+@keyframes urgentPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 20px rgba(224,85,85,.18)}}
+.bank-loan-card::before{content:'💸';position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:44px;opacity:.07}
+.bank-loan-lbl{font-size:10px;letter-spacing:.16em;color:rgba(224,85,85,.6);text-transform:uppercase;margin-bottom:4px}
+.bank-loan-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--red)}
+.bank-loan-meta{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;letter-spacing:.03em}
+.bank-loan-timer{font-family:'DM Mono',monospace;font-size:12px;margin-top:7px;padding:7px 11px;background:rgba(224,85,85,.07);border:1px solid rgba(224,85,85,.14);border-radius:var(--radius-sm)}
+.bank-loan-timer.danger{color:var(--red);border-color:rgba(224,85,85,.35)}
+.bank-loan-timer.safe{color:var(--muted2)}
+.bank-tabs{display:flex;gap:3px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:18px}
+.bank-tab{flex:1;padding:9px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:'Tenor Sans',serif;font-size:12px;letter-spacing:.06em;cursor:pointer;transition:all .2s}
+.bank-tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.bank-form{display:none}.bank-form.active{display:block}
+.bank-amount-row{display:flex;gap:7px;margin-bottom:12px}
+.bank-info-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px;font-size:12px;color:var(--muted2);line-height:1.8;margin-bottom:13px;letter-spacing:.03em}
+.bank-info-box .hi{color:var(--text);font-weight:600}
+.bank-info-box .warn{color:var(--red);font-weight:600}
+.bank-info-box .good{color:var(--green);font-weight:600}
+.bank-history{margin-top:20px}
+.bank-history-title{font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:9px}
+.bank-tx{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;font-size:12px}
+.bank-tx-amount{font-family:'DM Mono',monospace;font-weight:600;letter-spacing:.03em}
+.bank-tx-amount.pos{color:var(--green)}.bank-tx-amount.neg{color:var(--red)}
+.bank-tx-date{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* ══════════════════ ADMIN ══════════════════ */
+#admin-login-overlay{position:fixed;inset:0;z-index:8900;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px}
+#admin-login-overlay.show{display:flex}
+#admin-panel-overlay{position:fixed;inset:0;z-index:8900;background:var(--bg);overflow-y:auto;display:none}
+#admin-panel-overlay.show{display:block}
+.admin-inner{max-width:680px;margin:0 auto;padding:24px 16px 60px}
+.admin-section{margin-bottom:22px}
+.admin-section-title{font-size:10px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:11px;font-family:'Tenor Sans',serif}
+.admin-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.admin-stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px}
+.admin-stat-val{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--gold2)}
+.admin-stat-label{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.06em}
+.user-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:9px;margin-bottom:5px;flex-wrap:wrap}
+.user-row.suspended{border-color:rgba(224,85,85,.3)}
+.user-row-name{font-size:14px;font-weight:600;flex:1;min-width:80px;letter-spacing:.03em}
+.user-row-bal{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2)}
+.user-row-acts{display:flex;gap:5px;flex-wrap:wrap}
+.admin-ops{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px}
+.admin-input-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+.admin-input-row .input{flex:1;min-width:100px;padding:9px 11px;font-size:13px}
+.admin-msg{font-size:12px;min-height:18px;color:var(--muted2);margin-top:8px;letter-spacing:.03em}
+
+/* Horse editor */
+.adm-horse-row{
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:11px;margin-bottom:6px;
+}
+.adm-horse-row-top{display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap}
+.adm-input{
+  padding:7px 10px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;
+  outline:none;flex:1;min-width:80px;transition:border-color .14s;
+}
+.adm-input:focus{border-color:var(--gold)}
+
+/* CONFETTI */
+.confetti-piece{position:fixed;pointer-events:none;z-index:9990;border-radius:2px;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--dr));opacity:0}}
+
+/* RESPONSIVE */
+@media(max-width:380px){.game-grid{grid-template-columns:1fr}.num-grid{grid-template-columns:repeat(6,1fr)}}
+@media(min-width:600px){.main{padding:24px 24px 100px}.topbar{padding:0 24px}}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-overlay">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <div class="auth-crest">♠</div>
+      <div class="auth-brand">ROYALE</div>
+      <div class="auth-brand-sub">Casino Privé</div>
+    </div>
+    <div class="card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="authTab('login')">ログイン</button>
+        <button class="auth-tab" id="tab-reg" onclick="authTab('reg')">新規登録</button>
+      </div>
+      <!-- LOGIN -->
+      <div class="auth-form active" id="form-login">
+        <div class="auth-err" id="login-err"></div>
+        <div class="auth-field"><label class="lbl">ユーザー名</label><input class="input" id="login-user" type="text" placeholder="ユーザー名" autocomplete="username"></div>
+        <div class="auth-field"><label class="lbl">パスワード</label><input class="input" id="login-pass" type="password" placeholder="パスワード" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn btn-gold w-full btn-lg" onclick="doLogin()">入場する</button>
+      </div>
+      <!-- REGISTER -->
+      <div class="auth-form" id="form-reg">
+        <div class="auth-err" id="reg-err"></div>
+        <div class="auth-ok" id="reg-ok"></div>
+        <div class="auth-field"><label class="lbl">ユーザー名（4文字以上）</label><input class="input" id="reg-user" type="text" placeholder="ユーザー名" autocomplete="username"></div>
+        <div class="auth-field"><label class="lbl">パスワード（6文字以上）</label><input class="input" id="reg-pass" type="password" placeholder="パスワード" autocomplete="new-password"></div>
+        <div class="auth-field"><label class="lbl">パスワード（確認）</label><input class="input" id="reg-pass2" type="password" placeholder="パスワード再入力" autocomplete="new-password"></div>
+        <div class="auth-field">
+          <label class="lbl" style="margin-bottom:7px">利用規約（最後までスクロール）</label>
+          <div class="tos-box" id="tosBox" onscroll="checkTosScroll()">
+            <div class="tos-art"><h4>第1条 授業中のプレイ禁止</h4><p>本ゲームは<strong>授業中のプレイを固く禁止</strong>します。確認された場合、予告なくアカウントを停止します。</p></div>
+            <div class="tos-art"><h4>第2条 免責事項</h4><p>ゲーム内仮想通貨のみを使用するエンターテインメントです。本ゲームにより生じたいかなるトラブルに対しても<strong>運営は一切の責任を負いません</strong>。</p></div>
+            <div class="tos-art"><h4>第3条 仕様変更</h4><p>運営は<strong>予告なくゲームの仕様・ルール・確率を変更</strong>する権利を有します。変更による不利益への補填義務はありません。</p></div>
+            <div class="tos-art"><h4>第4条 不正行為への対応</h4><p>チート・バグ悪用・複数アカウントなど不適切なプレイに対しては、<strong>ゲーム内通貨の没収やアカウント停止</strong>を予告なく実施することがあります。</p></div>
+            <div class="tos-art"><h4>第5条 規約変更</h4><p>本規約は随時変更できるものとします。継続利用により変更後の規約に同意したとみなします。</p></div>
+            <p style="text-align:center;color:var(--muted);font-size:11px;margin-top:10px;letter-spacing:.08em">— 以上 —</p>
+          </div>
+          <div class="tos-hint" id="tosHint">▼ 最後までスクロールしてください</div>
+          <div class="tos-done" id="tosDone">✓ 利用規約を読みました</div>
+          <div class="tos-chk-row"><input type="checkbox" id="tosChk" disabled onchange="tosChkChange()"><label for="tosChk">利用規約に同意します</label></div>
+        </div>
+        <button class="btn btn-gold w-full btn-lg" id="reg-btn" onclick="doRegister()" disabled>会員登録する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="admin-login-overlay">
+  <div class="card" style="width:100%;max-width:340px;animation:fadeUp .3s ease-out">
+    <div class="auth-brand" style="font-size:18px;margin-bottom:16px;letter-spacing:.1em">⚙ 管理者認証</div>
+    <div class="auth-err" id="adm-err"></div>
+    <div class="auth-field"><label class="lbl">管理者パスワード</label><input class="input" id="adm-pass" type="password" placeholder="パスワード" onkeydown="if(event.key==='Enter')checkAdmin()"></div>
+    <div style="display:flex;gap:7px;margin-top:4px">
+      <button class="btn btn-gold" style="flex:1" onclick="checkAdmin()">入室</button>
+      <button class="btn btn-outline" onclick="closeAdminLogin()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel-overlay">
+  <div class="admin-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+      <div>
+        <div class="label-xs" style="margin-bottom:4px">ROYALE CASINO</div>
+        <div class="auth-brand" style="font-size:22px;letter-spacing:.1em;color:var(--gold2);font-family:'Cormorant Garamond',serif">管理者パネル</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="closeAdminPanel()">✕ 閉じる</button>
+    </div>
+    <div class="admin-section"><div class="admin-section-title">統計</div><div class="admin-stat-grid" id="adm-stats"></div></div>
+    <div class="admin-section"><div class="admin-section-title">ユーザー一覧</div><div id="adm-users"></div></div>
+    <div class="admin-section">
+      <div class="admin-section-title">アカウント操作</div>
+      <div class="admin-ops">
+        <div class="admin-input-row">
+          <input class="input" id="adm-target" placeholder="ユーザー名">
+          <input class="input" id="adm-currency" type="number" placeholder="残高">
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" onclick="admSetCurrency()">残高変更</button>
+          <button class="btn btn-danger btn-sm" onclick="admSuspend()">停止</button>
+          <button class="btn btn-success btn-sm" onclick="admUnsuspend()">停止解除</button>
+          <button class="btn btn-danger btn-sm" onclick="admConfiscate()">通貨没収</button>
+          <button class="btn btn-danger btn-sm" onclick="admDelete()">削除</button>
+        </div>
+        <div class="admin-msg" id="adm-msg"></div>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-section-title">🐴 競馬 — 馬の設定</div>
+      <div id="adm-horse-editor"></div>
+      <div style="display:flex;gap:7px;margin-top:10px">
+        <button class="btn btn-gold btn-sm" onclick="admSaveHorses()">設定を保存</button>
+        <button class="btn btn-outline btn-sm" onclick="admResetHorses()">リセット</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RANK UP -->
+<div class="rankup-overlay" id="rankupOverlay" onclick="this.classList.remove('show')">
+  <div class="rankup-card">
+    <div class="rankup-emoji" id="rankupEmoji"></div>
+    <div class="rankup-lbl">Rank Up!</div>
+    <div class="rankup-name" id="rankupName"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- APP -->
+<div id="app" style="display:none;flex-direction:column;min-height:100vh">
+
+  <div class="topbar">
+    <div class="topbar-brand">ROYALE</div>
+    <div class="topbar-rank" id="topbarRank">
+      <div id="topbarBadge"></div>
+      <div class="xp-bar-outer"><div class="xp-bar-inner" id="xpBarInner" style="width:0%"></div></div>
+      <div class="xp-lbl" id="xpLabel">XP 0</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <div class="balance-pill">🪙 <span id="balanceNum">10,000</span></div>
+      <div class="topbar-acts">
+        <button class="btn btn-outline btn-icon" title="補充" onclick="refillBalance()">＋</button>
+        <button class="btn btn-outline btn-icon" id="adminBtn" title="管理者" onclick="openAdminLogin()" style="display:none">⚙</button>
+        <button class="btn btn-outline btn-icon" title="ログアウト" onclick="doLogout()">⏻</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- LOBBY -->
+    <div class="screen active" id="screen-lobby">
+      <div style="margin-bottom:5px"><div class="label-xs">Welcome back</div></div>
+      <div class="screen-title" id="lobbyName" style="margin-bottom:18px">—</div>
+      <div class="game-grid">
+        <div class="game-card" onclick="openGame('slots')"><div class="game-card-icon">🎰</div><div class="game-card-name">スロット</div><div class="game-card-desc">3リール・クラシック</div><div class="game-card-tag">定番</div></div>
+        <div class="game-card" onclick="openGame('roulette')"><div class="game-card-icon">🎡</div><div class="game-card-name">ルーレット</div><div class="game-card-desc">欧州式・37マス</div></div>
+        <div class="game-card" onclick="openGame('hilo')"><div class="game-card-icon">🔼</div><div class="game-card-name">ハイ＆ロー</div><div class="game-card-desc">次のカードを予測</div></div>
+        <div class="game-card" onclick="openGame('coinflip')"><div class="game-card-icon">🪙</div><div class="game-card-name">コインフリップ</div><div class="game-card-desc">50/50の運勝負</div></div>
+        <div class="game-card" style="grid-column:1/-1" onclick="openGame('horse')"><div class="game-card-icon">🐴</div><div class="game-card-name">競馬</div><div class="game-card-desc">6頭のレース — オッズに賭けろ</div><div class="game-card-tag">NEW</div></div>
+      </div>
+    </div>
+
+    <!-- SLOTS -->
+    <div class="screen" id="screen-slots">
+      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">スロット</div><div class="game-header-sub">3 Reel Classic</div></div></div>
+      <details style="margin-bottom:14px"><summary class="rule-box">配当表・ルール</summary><div><div class="paytable-grid"><div class="pay-row"><span>7️⃣7️⃣7️⃣</span><span class="pay-mult">×100</span></div><div class="pay-row"><span>💎💎💎</span><span class="pay-mult">×50</span></div><div class="pay-row"><span>🍒🍒🍒</span><span class="pay-mult">×20</span></div><div class="pay-row"><span>🍋🍋🍋</span><span class="pay-mult">×15</span></div><div class="pay-row"><span>🍊🍊🍊</span><span class="pay-mult">×10</span></div><div class="pay-row"><span>⭐⭐⭐</span><span class="pay-mult">×8</span></div><div class="pay-row"><span>🍒🍒</span><span class="pay-mult">×3</span></div><div class="pay-row"><span>🍒</span><span class="pay-mult">×2</span></div></div></div></details>
+      <div class="slot-wrap"><div class="reels"><div class="reel-win"><div class="reel-inner" id="reel0"></div></div><div class="reel-win"><div class="reel-inner" id="reel1"></div></div><div class="reel-win"><div class="reel-inner" id="reel2"></div></div></div><div class="result-msg neutral" id="slotMsg">ベットしてスピン</div></div>
+      <div class="bet-row"><span class="bet-lbl">BET</span><button class="stepper" onclick="changeBet('slot',-50)">−</button><div class="bet-amt" id="slotBetDisplay">¥100</div><button class="stepper" onclick="changeBet('slot',50)">＋</button></div>
+      <button class="btn btn-gold w-full btn-lg" id="spinBtn" onclick="doSpin()">SPIN</button>
+    </div>
+
+    <!-- ROULETTE -->
+    <div class="screen" id="screen-roulette">
+      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">ルーレット</div><div class="game-header-sub">European Single Zero</div></div></div>
+      <details style="margin-bottom:14px"><summary class="rule-box">ルール説明</summary><div><p style="font-size:12px;color:var(--muted2);line-height:1.7;padding-top:8px">0〜36のいずれかが出ます。赤/黒/奇偶は1:1、ダズンは2:1、数字直接は35:1。0はグリーンで赤/黒すべてハズレ。</p></div></details>
+      <div class="roulette-wrap">
+        <div class="wheel-area"><div class="wheel-svg-wrap"><div class="wheel-pointer"></div><svg class="wheel-svg" id="rouletteWheel" viewBox="0 0 200 200"></svg><div class="wheel-center"></div></div></div>
+        <div style="margin-bottom:12px"><div class="result-number-big" id="rouletteNum">—</div><div class="result-color-label" id="rouletteColor"></div></div>
+        <div class="roulette-hist" id="rouletteHist"></div>
+      </div>
+      <div class="roulette-bets" style="margin-bottom:12px">
+        <div class="rbet-section-label">Outside Bets</div>
+        <div class="rbet-grid rbet-grid-3" style="margin-bottom:6px">
+          <div class="rbet-btn" data-bet="red"    data-name="赤"    data-odds="1"  onclick="selRBet(this)">🔴 赤<div class="rbet-odds">1:1</div></div>
+          <div class="rbet-btn" data-bet="black"  data-name="黒"    data-odds="1"  onclick="selRBet(this)">⚫ 黒<div class="rbet-odds">1:1</div></div>
+          <div class="rbet-btn" data-bet="green"  data-name="0"     data-odds="17" onclick="selRBet(this)">🟢 0<div class="rbet-odds">17:1</div></div>
+          <div class="rbet-btn" data-bet="odd"    data-name="奇数"  data-odds="1"  onclick="selRBet(this)">奇数<div class="rbet-odds">1:1</div></div>
+          <div class="rbet-btn" data-bet="even"   data-name="偶数"  data-odds="1"  onclick="selRBet(this)">偶数<div class="rbet-odds">1:1</div></div>
+          <div class="rbet-btn" data-bet="1to18"  data-name="1-18"  data-odds="1"  onclick="selRBet(this)">1–18<div class="rbet-odds">1:1</div></div>
+          <div class="rbet-btn" data-bet="19to36" data-name="19-36" data-odds="1"  onclick="selRBet(this)">19–36<div class="rbet-odds">1:1</div></div>
+          <div class="rbet-btn" data-bet="d1"     data-name="1-12"  data-odds="2"  onclick="selRBet(this)">1–12<div class="rbet-odds">2:1</div></div>
+          <div class="rbet-btn" data-bet="d2"     data-name="13-24" data-odds="2"  onclick="selRBet(this)">13–24<div class="rbet-odds">2:1</div></div>
+          <div class="rbet-btn" data-bet="d3"     data-name="25-36" data-odds="2"  onclick="selRBet(this)">25–36<div class="rbet-odds">2:1</div></div>
+        </div>
+        <div class="rbet-section-label">Number Bets（35:1）</div>
+        <div class="num-grid" id="numGrid"></div>
+      </div>
+      <div class="bet-row"><span class="bet-lbl">BET</span><button class="stepper" onclick="changeBet('roulette',-50)">−</button><div class="bet-amt" id="rouletteBetDisplay">¥200</div><button class="stepper" onclick="changeBet('roulette',50)">＋</button><button class="btn btn-outline btn-sm" onclick="clearRBet()">クリア</button></div>
+      <div class="result-msg neutral" id="rouletteMsg">ベットを選んでください</div>
+      <button class="btn btn-gold w-full btn-lg" id="rouletteSpinBtn" onclick="doRouletteSpın()" style="margin-top:12px">SPIN</button>
+    </div>
+
+    <!-- HI-LO -->
+    <div class="screen" id="screen-hilo">
+      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">ハイ＆ロー</div><div class="game-header-sub">Predict the next card</div></div></div>
+      <div class="rule-box"><p>現在のカードより次が<strong>高いか低いか</strong>を予測。連勝で最大×8倍。A=1、絵札=10、同数は負け。</p></div>
+      <div class="hilo-wrap">
+        <div class="hilo-card-display"><div id="hiloCardPrev" style="opacity:.3;transform:scale(.85);transition:all .3s"></div><div class="hilo-vs">VS</div><div id="hiloCardNext"></div></div>
+        <div class="hilo-btn-row" id="hiloBtns" style="opacity:.4;pointer-events:none">
+          <div class="hilo-btn higher" onclick="hiloGuess('high')">🔼<span>HIGH</span></div>
+          <div class="hilo-btn lower"  onclick="hiloGuess('low')">🔽<span>LOW</span></div>
+        </div>
+        <div class="result-msg neutral" id="hiloMsg" style="margin-top:12px">最初のカードを引きます</div>
+        <div class="hilo-streak">連勝: <span id="hiloStreak">0</span>　倍率: <span id="hiloMult">1.5</span>×</div>
+      </div>
+      <div class="bet-row"><span class="bet-lbl">BET</span><button class="stepper" onclick="changeBet('hilo',-50)">−</button><div class="bet-amt" id="hiloBetDisplay">¥200</div><button class="stepper" onclick="changeBet('hilo',50)">＋</button></div>
+      <button class="btn btn-gold w-full btn-lg" id="hiloDealBtn" onclick="hiloStart()">カードを引く</button>
+    </div>
+
+    <!-- COIN FLIP -->
+    <div class="screen" id="screen-coinflip">
+      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">コインフリップ</div><div class="game-header-sub">50 / 50</div></div></div>
+      <div class="rule-box"><p>表か裏を選んでベット。当たれば2倍。</p></div>
+      <div class="coin-wrap">
+        <div class="coin" id="coinDisplay">🪙</div>
+        <div class="coin-choice-row">
+          <div class="coin-choice" id="choiceHeads" onclick="selCoin('heads')">🌟<span>表 HEADS</span></div>
+          <div class="coin-choice" id="chooseTails" onclick="selCoin('tails')">🌙<span>裏 TAILS</span></div>
+        </div>
+        <div class="result-msg neutral" id="coinMsg">表か裏を選んでベット</div>
+        <div class="coin-stats">
+          <div class="coin-stat"><div class="coin-stat-val w" id="coinWins">0</div><div class="coin-stat-label">勝ち</div></div>
+          <div class="coin-stat"><div class="coin-stat-val" id="coinTotal">0</div><div class="coin-stat-label">合計</div></div>
+          <div class="coin-stat"><div class="coin-stat-val l" id="coinLosses">0</div><div class="coin-stat-label">負け</div></div>
+        </div>
+      </div>
+      <div class="bet-row"><span class="bet-lbl">BET</span><button class="stepper" onclick="changeBet('coin',-50)">−</button><div class="bet-amt" id="coinBetDisplay">¥100</div><button class="stepper" onclick="changeBet('coin',50)">＋</button></div>
+      <button class="btn btn-gold w-full btn-lg" id="coinFlipBtn" onclick="doCoinFlip()">FLIP</button>
+    </div>
+
+    <!-- HORSE RACING -->
+    <div class="screen" id="screen-horse">
+      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">競馬</div><div class="game-header-sub">Horse Racing · 6 Runners</div></div></div>
+      <details style="margin-bottom:14px"><summary class="rule-box">ルール説明</summary><div><p style="font-size:12px;color:var(--muted2);line-height:1.7;padding-top:8px">6頭から賭けたい馬を選んでBET。複数選択可能（各馬にbet額が適用）。オッズ高い馬ほど配当大。管理者が馬名・オッズ・速度を変更できます。</p></div></details>
+      <div class="race-track">
+        <div class="race-status"><div><span class="race-dot" id="raceStatusDot"></span><span id="raceStatusText">馬を選んでください</span></div><div id="raceCountdown" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)"></div></div>
+        <div class="race-track-inner" id="raceTrackInner"><div class="finish-line"></div><div class="winner-banner" id="winnerBanner"><div class="winner-banner-title">🏆 Winner!</div><div class="winner-banner-horse" id="winnerEmoji"></div><div class="winner-banner-name" id="winnerName"></div></div></div>
+      </div>
+      <div class="label-xs" style="margin-bottom:9px">馬を選ぶ（複数可）</div>
+      <div class="odds-grid" id="oddsGrid"></div>
+      <div class="bet-row"><span class="bet-lbl">BET/頭</span><button class="stepper" onclick="changeBet('horse',-50)">−</button><div class="bet-amt" id="horseBetDisplay">¥200</div><button class="stepper" onclick="changeBet('horse',50)">＋</button></div>
+      <div class="result-msg neutral" id="horseMsg">馬を選んでBETしてください</div>
+      <button class="btn btn-gold w-full btn-lg" id="horseBetBtn" onclick="doHorseBet()" style="margin-top:12px">BET & RACE</button>
+    </div>
+
+    <!-- RANKING -->
+    <div class="screen" id="screen-ranking">
+      <div class="screen-title">Ranking</div>
+      <div class="screen-sub">XP Leaderboard</div>
+      <div class="rank-header-card" id="myRankHeader">
+        <div class="rank-header-left">
+          <div class="rank-header-name" id="myRankName">—</div>
+          <div class="rank-header-xp" id="myRankXp">XP 0</div>
+          <div class="rank-bar-outer"><div class="rank-bar-fill" id="myRankFill" style="width:0%"></div></div>
+        </div>
+        <div class="rank-icon" id="myRankIcon">🥉</div>
+      </div>
+      <div class="lb-list" id="lbList"></div>
+    </div>
+
+    <!-- BANK -->
+    <div class="screen" id="screen-bank">
+      <div class="screen-title">銀行</div>
+      <div class="screen-sub">ROYALE Private Bank</div>
+      <div class="bank-header">
+        <div class="bank-header-lbl">普通預金残高</div>
+        <div class="bank-val" id="bankSavingsVal">¥0</div>
+        <div class="bank-rate">📈 0.1%/時間・複利</div>
+        <div style="font-size:10px;color:rgba(46,204,142,.45);margin-top:7px;letter-spacing:.04em" id="bankInterestPreview"></div>
+      </div>
+      <div class="bank-loan-card" id="bankLoanCard" style="display:none">
+        <div class="bank-loan-lbl">借金残高</div>
+        <div class="bank-loan-val" id="bankLoanVal">¥0</div>
+        <div class="bank-loan-meta" id="bankLoanMeta"></div>
+        <div class="bank-loan-timer" id="bankLoanTimer"></div>
+      </div>
+      <div class="bank-tabs">
+        <button class="bank-tab active" id="btab-deposit"  onclick="bankTab('deposit')">預金</button>
+        <button class="bank-tab"        id="btab-withdraw" onclick="bankTab('withdraw')">引出</button>
+        <button class="bank-tab"        id="btab-loan"     onclick="bankTab('loan')">借金</button>
+        <button class="bank-tab"        id="btab-repay"    onclick="bankTab('repay')">返済</button>
+      </div>
+      <div class="bank-form active" id="bform-deposit">
+        <div class="bank-info-box">手持ちの通貨を預けます。<span class="good">1時間ごとに0.1%の利子</span>（複利）。</div>
+        <label class="lbl">預金額</label>
+        <div class="bank-amount-row"><input class="input" id="bankDepositAmt" type="number" placeholder="0" min="1"><button class="btn btn-outline btn-sm" onclick="bankSetAll('deposit')">全額</button></div>
+        <button class="btn btn-gold w-full" onclick="doDeposit()">💰 預金する</button>
+      </div>
+      <div class="bank-form" id="bform-withdraw">
+        <div class="bank-info-box">預金残高から引き出します。利子込みで引き出せます。</div>
+        <label class="lbl">引出額</label>
+        <div class="bank-amount-row"><input class="input" id="bankWithdrawAmt" type="number" placeholder="0" min="1"><button class="btn btn-outline btn-sm" onclick="bankSetAll('withdraw')">全額</button></div>
+        <button class="btn btn-gold w-full" onclick="doWithdraw()">🏧 引き出す</button>
+      </div>
+      <div class="bank-form" id="bform-loan">
+        <div class="bank-info-box"><span class="warn">⚠ 借金は1時間ごとに0.1%増加（複利）</span><br>上限: <span class="hi">¥1,000,000,000,000</span><br>返済期限: <span class="hi">借入から7日以内</span><br><span class="warn">期限超過で残高没収・停止の可能性</span></div>
+        <label class="lbl">借入額</label>
+        <div class="bank-amount-row"><input class="input" id="bankLoanAmt" type="number" placeholder="0" min="1"></div>
+        <button class="btn btn-danger w-full" onclick="doLoan()" id="loanBtn">💸 借りる</button>
+      </div>
+      <div class="bank-form" id="bform-repay">
+        <div class="bank-info-box" id="repayInfo">借金はありません。</div>
+        <label class="lbl">返済額</label>
+        <div class="bank-amount-row"><input class="input" id="bankRepayAmt" type="number" placeholder="0" min="1"><button class="btn btn-outline btn-sm" onclick="bankSetAll('repay')">全額</button></div>
+        <button class="btn btn-success w-full" onclick="doRepay()">✅ 返済する</button>
+      </div>
+      <div class="bank-history"><div class="bank-history-title">取引履歴</div><div id="bankHistory"></div></div>
+    </div>
+
+  </div><!-- /main -->
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-lobby" onclick="navTo('lobby')"><span class="nav-icon">♠</span><span class="nav-lbl">ロビー</span></button>
+    <button class="nav-item" id="nav-ranking" onclick="navTo('ranking')"><span class="nav-icon">🏆</span><span class="nav-lbl">順位</span></button>
+    <button class="nav-item" id="nav-bank" onclick="navTo('bank')"><span class="nav-icon">🏦</span><span class="nav-lbl">銀行</span></button>
+  </nav>
+</div>
+
+<script>
+
+// ══════════════════════════════════════════════════════════════
+// FIREBASE CONFIG
+// ══════════════════════════════════════════════════════════════
+// 🔧 あなたのFirebaseプロジェクトの設定に書き換えてください
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyAsBs9DsHJUY2DcDXCxsOFwRnLfe1ComM0",
+  authDomain:        "roiyal.firebaseapp.com",
+  databaseURL:       "https://roiyal-default-rtdb.firebaseio.com",
+  projectId:         "roiyal",
+  storageBucket:     "roiyal.firebasestorage.app",
+  messagingSenderId: "398393153659",
+  appId:             "1:398393153659:web:35630067a2021516092ade"
+};
+
+// Firebase SDK (loaded via CDN in <head>)
+let db = null;
+function initFirebase() {
+  if (typeof firebase === 'undefined') {
+    setTimeout(initFirebase, 300);
+    return;
+  }
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.database();
+  // Load horse config from Firebase on start
+  fbGet('horse_cfg').then(cfg => {
+    if (cfg && cfg.length === 6) {
+      localStorage.setItem(HORSE_CFG_KEY, JSON.stringify(cfg));
+    }
+    // Auto-login
+    const u = sessionStorage.getItem('royale_user');
+    if (u) {
+      fbGet('users/' + u).then(data => {
+        if (data && !data.suspended) {
+          currentUserData = data;
+          enterApp(u);
+        } else {
+          sessionStorage.removeItem('royale_user');
+        }
+      });
+    }
+    // Start live listener for all users (for leaderboard + admin)
+    startUsersListener();
+  });
+}
+
+// ── Firebase helpers ──
+function fbSet(path, value) {
+  if (!db) return Promise.resolve();
+  return db.ref(path).set(value);
+}
+function fbUpdate(path, value) {
+  if (!db) return Promise.resolve();
+  return db.ref(path).update(value);
+}
+function fbGet(path) {
+  if (!db) return Promise.resolve(null);
+  return db.ref(path).get().then(s => s.exists() ? s.val() : null);
+}
+function fbRemove(path) {
+  if (!db) return Promise.resolve();
+  return db.ref(path).remove();
+}
+
+// Live cache of all users (for leaderboard + admin)
+let allUsersCache = {};
+function startUsersListener() {
+  if (!db) return;
+  db.ref('users').on('value', snap => {
+    allUsersCache = snap.exists() ? snap.val() : {};
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// STORAGE & AUTH
+// ══════════════════════════════════════════════════════════════
+const ADMIN_PASS = 'helloeveryone';
+let currentUser = null;
+let currentUserData = null;
+let balance = 10000;
+let tosScrolled = false;
+
+function authTab(t) {
+  ['login','reg'].forEach(id => {
+    document.getElementById('tab-'+id).classList.toggle('active', id===t);
+    document.getElementById('form-'+id).classList.toggle('active', id===t);
+  });
+  document.getElementById('login-err').style.display = 'none';
+  document.getElementById('reg-err').style.display = 'none';
+  document.getElementById('reg-ok').style.display = 'none';
+}
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+}
+
+async function doLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  document.getElementById('login-err').style.display = 'none';
+  if (!user || !pass) { showErr('login-err','ユーザー名とパスワードを入力してください'); return; }
+
+  const btn = document.querySelector('#form-login .btn-gold');
+  btn.disabled = true; btn.textContent = '確認中...';
+
+  try {
+    const data = await fbGet('users/' + user);
+    if (!data) { showErr('login-err','ユーザーが見つかりません'); return; }
+    if (data.pass !== btoa(pass)) { showErr('login-err','パスワードが違います'); return; }
+    if (data.suspended) { showErr('login-err','このアカウントは停止されています'); return; }
+    currentUserData = data;
+    enterApp(user);
+  } catch(e) {
+    showErr('login-err','接続エラー: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '入場する';
+  }
+}
+
+function checkTosScroll() {
+  if (tosScrolled) return;
+  const b = document.getElementById('tosBox');
+  if (b.scrollTop + b.clientHeight >= b.scrollHeight - 8) {
+    tosScrolled = true;
+    document.getElementById('tosHint').style.display = 'none';
+    document.getElementById('tosDone').style.display = 'block';
+    document.getElementById('tosChk').disabled = false;
+  }
+}
+function tosChkChange() {
+  document.getElementById('reg-btn').disabled = !(document.getElementById('tosChk').checked && tosScrolled);
+}
+
+async function doRegister() {
+  const user = document.getElementById('reg-user').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  document.getElementById('reg-err').style.display = 'none';
+  document.getElementById('reg-ok').style.display = 'none';
+  if (user.length < 4) { showErr('reg-err','ユーザー名は4文字以上'); return; }
+  if (pass.length < 6) { showErr('reg-err','パスワードは6文字以上'); return; }
+  if (pass !== pass2) { showErr('reg-err','パスワードが一致しません'); return; }
+  // Check special characters (Firebase key restriction)
+  if (/[.$#\[\]\/]/.test(user)) { showErr('reg-err','ユーザー名に . $ # [ ] / は使えません'); return; }
+
+  const btn = document.getElementById('reg-btn');
+  btn.disabled = true; btn.textContent = '登録中...';
+
+  try {
+    const existing = await fbGet('users/' + user);
+    if (existing) { showErr('reg-err','このユーザー名は使われています'); return; }
+
+    const newUser = { pass: btoa(pass), balance: 10000, xp: 0, createdAt: Date.now() };
+    await fbSet('users/' + user, newUser);
+
+    const ok = document.getElementById('reg-ok');
+    ok.textContent = `「${user}」の登録完了！ログインしてください。`;
+    ok.style.display = 'block';
+    ['reg-user','reg-pass','reg-pass2'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('tosChk').checked = false;
+    tosScrolled = false;
+    setTimeout(() => authTab('login'), 1600);
+  } catch(e) {
+    showErr('reg-err','登録エラー: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '会員登録する';
+  }
+}
+
+function enterApp(username) {
+  currentUser = username;
+  balance = (currentUserData && currentUserData.balance !== undefined) ? currentUserData.balance : 10000;
+  sessionStorage.setItem('royale_user', username);
+
+  const overlay = document.getElementById('auth-overlay');
+  overlay.style.opacity = '0'; overlay.style.transition = 'opacity .4s';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('lobbyName').textContent = username;
+    document.getElementById('adminBtn').style.display = 'flex';
+    updateBalanceUI();
+    updateRankUI();
+
+    // Start live listener for this user's data
+    if (db) {
+      db.ref('users/' + username).on('value', snap => {
+        if (!snap.exists()) return;
+        const d = snap.val();
+        // Only update balance if we're not currently in a game (avoid race condition)
+        if (d.balance !== undefined && Math.abs(d.balance - balance) > 1000) {
+          balance = d.balance;
+          updateBalanceUI();
+        }
+        currentUserData = { ...currentUserData, ...d };
+        updateRankUI();
+      });
+    }
+
+    showToast(`ようこそ、${username} さん！`);
+    initSlots(); buildRouletteWheel(); buildNumGrid();
+  }, 400);
+}
+
+function doLogout() {
+  saveBalance();
+  if (db && currentUser) db.ref('users/' + currentUser).off();
+  sessionStorage.removeItem('royale_user');
+  currentUser = null; currentUserData = null;
+  location.reload();
+}
+
+function saveBalance() {
+  if (!currentUser) return;
+  if (currentUserData) currentUserData.balance = balance;
+  fbSet('users/' + currentUser + '/balance', balance);
+}
+
+function refillBalance() {
+  balance = 10000; updateBalanceUI(); saveBalance();
+  showToast('¥10,000 補充しました');
+}
+
+// ══════════════════════════════════════════════════════════════
+// BALANCE & RANK
+// ══════════════════════════════════════════════════════════════
+const RANK_TIERS = [
+  { name:'BRONZE',   emoji:'🥉', minXp:0,     color:'#cd7f32' },
+  { name:'SILVER',   emoji:'🥈', minXp:500,   color:'#b0b8c8' },
+  { name:'GOLD',     emoji:'🥇', minXp:1500,  color:'#fbbf24' },
+  { name:'PLATINUM', emoji:'💎', minXp:4000,  color:'#67e8f9' },
+  { name:'DIAMOND',  emoji:'💠', minXp:9000,  color:'#c084fc' },
+  { name:'LEGEND',   emoji:'👑', minXp:20000, color:'#fb7185' },
+];
+function getRank(xp) {
+  let r = RANK_TIERS[0];
+  for (const t of RANK_TIERS) if (xp >= t.minXp) r = t;
+  return r;
+}
+function getNextRank(xp) {
+  for (let i = 0; i < RANK_TIERS.length-1; i++) if (xp < RANK_TIERS[i+1].minXp) return RANK_TIERS[i+1];
+  return null;
+}
+function getXp() {
+  if (!currentUser) return 0;
+  return (currentUserData && currentUserData.xp) || 0;
+}
+function addXp(n) {
+  if (!currentUser) return;
+  if (!currentUser || !currentUserData) return;
+  const oldXp = currentUserData.xp || 0;
+  const oldRank = getRank(oldXp);
+  currentUserData.xp = oldXp + n;
+  fbSet('users/' + currentUser + '/xp', currentUserData.xp);
+  updateRankUI();
+  const newRank = getRank(currentUserData.xp);
+  if (newRank.name !== oldRank.name) showRankUp(newRank);
+}
+
+function updateBalanceUI() {
+  document.getElementById('balanceNum').textContent = balance.toLocaleString();
+}
+function updateRankUI() {
+  const xp = getXp();
+  const rank = getRank(xp);
+  const next = getNextRank(xp);
+  // topbar badge
+  const badge = document.getElementById('topbarBadge');
+  badge.innerHTML = `<span class="badge badge-${rank.name.toLowerCase()}">${rank.emoji} ${rank.name}</span>`;
+  // xp bar
+  const bar = document.getElementById('xpBarInner');
+  const lbl = document.getElementById('xpLabel');
+  if (next) {
+    const pct = Math.min(100, ((xp - rank.minXp) / (next.minXp - rank.minXp)) * 100);
+    bar.style.width = pct + '%';
+    lbl.textContent = `XP ${xp.toLocaleString()} / ${next.minXp.toLocaleString()}`;
+  } else {
+    bar.style.width = '100%'; bar.style.background = rank.color;
+    lbl.textContent = `XP ${xp.toLocaleString()} MAX`;
+  }
+  bar.style.background = rank.color;
+}
+function showRankUp(rank) {
+  document.getElementById('rankupEmoji').textContent = rank.emoji;
+  document.getElementById('rankupName').textContent = rank.name;
+  const o = document.getElementById('rankupOverlay');
+  o.classList.add('show');
+  confettiEffect();
+  setTimeout(() => o.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOAST & EFFECTS
+// ══════════════════════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (type ? ' toast-'+type : '') + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+function confettiEffect() {
+  const colors = ['#7c6fff','#34d399','#fbbf24','#f87171','#67e8f9'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const x = window.innerWidth/2 + (Math.random()-.5)*120;
+    const y = window.innerHeight/2 + (Math.random()-.5)*60;
+    const dx = (Math.random()-.5)*400; const dy = -Math.random()*350-50;
+    const dr = (Math.random()-.5)*720 + 'deg';
+    const dur = .7 + Math.random()*.6;
+    p.style.cssText = `left:${x}px;top:${y}px;width:${6+Math.random()*8}px;height:${6+Math.random()*6}px;background:${colors[Math.floor(Math.random()*colors.length)]};--dx:${dx}px;--dy:${dy}px;--dr:${dr};animation-duration:${dur}s;animation-delay:${i*30}ms`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), (dur + i*.03 + .1)*1000);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════
+let currentScreen = 'lobby';
+function openGame(id) {
+  document.getElementById('screen-lobby').classList.remove('active');
+  document.getElementById('screen-'+id).classList.add('active');
+  currentScreen = id;
+  // Init hilo on open
+  if (id === 'hilo') hiloInit();
+  if (id === 'horse') horseInit();
+}
+function closeGame() {
+  document.getElementById('screen-'+currentScreen).classList.remove('active');
+  currentScreen = 'lobby';
+  document.getElementById('screen-lobby').classList.add('active');
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-lobby').classList.add('active');
+}
+function navTo(id) {
+  // hide all screens
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  currentScreen = id;
+  if (id === 'ranking') renderLeaderboard();
+  if (id === 'bank') { renderBank(); startBankTimer(); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// BET CONTROLS
+// ══════════════════════════════════════════════════════════════
+const bets = { slot:100, roulette:200, hilo:200, coin:100, horse:200 };
+const betLimits = { slot:[50,2000], roulette:[50,2000], hilo:[50,2000], coin:[50,2000], horse:[50,2000] };
+const betDisplayIds = { slot:'slotBetDisplay', roulette:'rouletteBetDisplay', hilo:'hiloBetDisplay', coin:'coinBetDisplay', horse:'horseBetDisplay' };
+function changeBet(game, delta) {
+  const [mn, mx] = betLimits[game];
+  bets[game] = Math.max(mn, Math.min(mx, bets[game] + delta));
+  document.getElementById(betDisplayIds[game]).textContent = '¥' + bets[game].toLocaleString();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SLOTS
+// ══════════════════════════════════════════════════════════════
+const REEL_STRIP = ['🍒','🍊','🍋','⭐','🍒','💎','🔔','🍒','7️⃣','🍊','🍋','🍒','⭐','💎','🍒'];
+const SLOT_PAY = {'7️⃣7️⃣7️⃣':100,'💎💎💎':50,'🍒🍒🍒':20,'🍋🍋🍋':15,'🍊🍊🍊':10,'⭐⭐⭐':8};
+let slotSpinning = false;
+let reelPos = [0,0,0];
+
+function initSlots() {
+  for (let i = 0; i < 3; i++) {
+    const inner = document.getElementById('reel'+i);
+    inner.innerHTML = '';
+    [...REEL_STRIP,...REEL_STRIP,...REEL_STRIP].forEach(sym => {
+      const d = document.createElement('div'); d.className = 'reel-sym'; d.textContent = sym; inner.appendChild(d);
+    });
+    inner.style.transform = `translateY(${-reelPos[i]*88}px)`;
+  }
+}
+
+function doSpin() {
+  if (slotSpinning) return;
+  if (balance < bets.slot) { showToast('残高が足りません'); return; }
+  balance -= bets.slot; updateBalanceUI(); saveBalance();
+  slotSpinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  const msg = document.getElementById('slotMsg');
+  msg.className = 'result-msg neutral'; msg.textContent = '🎰 スピン中...';
+
+  const targets = [0,1,2].map(() => Math.floor(Math.random()*REEL_STRIP.length));
+  const stops = [600,950,1300];
+
+  for (let idx = 0; idx < 3; idx++) {
+    const inner = document.getElementById('reel'+idx);
+    let pos = reelPos[idx];
+    const animInterval = setInterval(() => {
+      pos = (pos + 5) % (REEL_STRIP.length * 3);
+      inner.style.transform = `translateY(${-pos*88}px)`;
+    }, 40);
+
+    setTimeout(() => {
+      clearInterval(animInterval);
+      reelPos[idx] = targets[idx];
+      inner.style.transition = 'transform .35s cubic-bezier(.25,.46,.45,.94)';
+      inner.style.transform = `translateY(${-targets[idx]*88}px)`;
+      setTimeout(() => inner.style.transition = '', 400);
+      if (idx === 2) setTimeout(() => resolveSlot(targets), 500);
+    }, stops[idx]);
+  }
+}
+
+function resolveSlot(targets) {
+  const syms = targets.map(i => REEL_STRIP[i]);
+  const key = syms.join('');
+  let mult = 0;
+  if (SLOT_PAY[key]) mult = SLOT_PAY[key];
+  else if (syms[0]==='🍒'&&syms[1]==='🍒') mult = 3;
+  else if (syms[0]==='🍒') mult = 2;
+
+  const msg = document.getElementById('slotMsg');
+  if (mult > 0) {
+    const win = bets.slot * mult;
+    balance += win; updateBalanceUI(); saveBalance();
+    msg.className = 'result-msg win'; msg.textContent = `🎉 ${syms.join('')} × ${mult} ！ +¥${win.toLocaleString()}`;
+    addXp(Math.max(5, mult * 2));
+    if (mult >= 20) confettiEffect();
+    showToast(`+¥${win.toLocaleString()}`, 'win');
+  } else {
+    msg.className = 'result-msg loss'; msg.textContent = 'ハズレ…もう一度！';
+    addXp(1);
+  }
+  slotSpinning = false;
+  document.getElementById('spinBtn').disabled = false;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ROULETTE
+// ══════════════════════════════════════════════════════════════
+const RED_NUMS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+let rBet = { type:null, name:'', odds:1, num:null };
+let rouletteSpinning = false;
+let wheelRot = 0;
+let rouletteHistory = [];
+
+function buildRouletteWheel() {
+  const svg = document.getElementById('rouletteWheel');
+  svg.innerHTML = '';
+  const n = WHEEL_ORDER.length, cx=100, cy=100, r=95, ri=36;
+  WHEEL_ORDER.forEach((num,i) => {
+    const a1=(i/n)*2*Math.PI-Math.PI/2, a2=((i+1)/n)*2*Math.PI-Math.PI/2;
+    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    const x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
+    const xi1=cx+ri*Math.cos(a1), yi1=cy+ri*Math.sin(a1);
+    const xi2=cx+ri*Math.cos(a2), yi2=cy+ri*Math.sin(a2);
+    const fill = num===0 ? '#065f46' : RED_NUMS.includes(num) ? '#991b1b' : '#1e293b';
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${xi1},${yi1} L${x1},${y1} A${r},${r} 0 0,1 ${x2},${y2} L${xi2},${yi2} A${ri},${ri} 0 0,0 ${xi1},${yi1} Z`);
+    path.setAttribute('fill', fill);
+    path.setAttribute('stroke','rgba(255,255,255,0.08)'); path.setAttribute('stroke-width','0.5');
+    svg.appendChild(path);
+    const am=(a1+a2)/2, tr=(r+ri)/2;
+    const tx=cx+tr*Math.cos(am), ty=cy+tr*Math.sin(am);
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x',tx); text.setAttribute('y',ty);
+    text.setAttribute('fill','rgba(255,255,255,0.75)'); text.setAttribute('font-size','6');
+    text.setAttribute('text-anchor','middle'); text.setAttribute('dominant-baseline','middle');
+    text.setAttribute('transform',`rotate(${(am*180/Math.PI)+90},${tx},${ty})`);
+    text.setAttribute('font-weight','700'); text.setAttribute('font-family','DM Mono,monospace');
+    text.textContent = num; svg.appendChild(text);
+  });
+  const ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  ring.setAttribute('cx',100); ring.setAttribute('cy',100); ring.setAttribute('r',95);
+  ring.setAttribute('fill','none'); ring.setAttribute('stroke','rgba(255,255,255,0.15)'); ring.setAttribute('stroke-width','2');
+  svg.appendChild(ring);
+}
+
+function buildNumGrid() {
+  const g = document.getElementById('numGrid'); g.innerHTML = '';
+  // 0
+  const z = document.createElement('div');
+  z.className='num-btn ng'; z.textContent='0'; z.onclick=()=>selNum(0); g.appendChild(z);
+  for (let n=1;n<=36;n++) {
+    const b=document.createElement('div');
+    b.className='num-btn '+(RED_NUMS.includes(n)?'nr':'nb');
+    b.id='nb'+n; b.textContent=n; b.onclick=()=>selNum(n); g.appendChild(b);
+  }
+}
+
+function selRBet(el) {
+  document.querySelectorAll('.rbet-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.num-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  rBet = { type: el.dataset.bet, name: el.dataset.name, odds: parseInt(el.dataset.odds), num: null };
+  document.getElementById('rouletteMsg').className = 'result-msg neutral';
+  document.getElementById('rouletteMsg').textContent = `${rBet.name} にベット`;
+}
+function selNum(n) {
+  document.querySelectorAll('.rbet-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.num-btn').forEach(b=>b.classList.remove('sel'));
+  const el = n===0 ? document.querySelector('.num-btn.ng') : document.getElementById('nb'+n);
+  if(el) el.classList.add('sel');
+  rBet = { type:'number', name:`${n}番`, odds:35, num:n };
+  document.getElementById('rouletteMsg').textContent = `${n}番 にベット (35:1)`;
+}
+function clearRBet() {
+  document.querySelectorAll('.rbet-btn,.num-btn').forEach(b=>b.classList.remove('sel'));
+  rBet = { type:null, name:'', odds:1, num:null };
+  document.getElementById('rouletteMsg').textContent = 'ベットを選んでください';
+}
+
+function doRouletteSpın() {
+  if (rouletteSpinning) return;
+  if (!rBet.type) { showToast('ベットを選んでください'); return; }
+  if (balance < bets.roulette) { showToast('残高が足りません'); return; }
+  balance -= bets.roulette; updateBalanceUI(); saveBalance();
+  rouletteSpinning = true;
+  document.getElementById('rouletteSpinBtn').disabled = true;
+  document.getElementById('rouletteNum').textContent = '…';
+  document.getElementById('rouletteNum').className = 'result-number-big';
+  document.getElementById('rouletteColor').textContent = '';
+  document.getElementById('rouletteMsg').className = 'result-msg neutral';
+  document.getElementById('rouletteMsg').textContent = '🎡 スピン中...';
+
+  const result = Math.floor(Math.random()*37);
+  const idx = WHEEL_ORDER.indexOf(result);
+  const n = WHEEL_ORDER.length;
+  const targetAngle = (idx/n)*360 + (0.5/n)*360;
+  const finalRot = wheelRot + 5*360 + (360 - targetAngle%360);
+  wheelRot = finalRot;
+  const wheel = document.getElementById('rouletteWheel');
+  wheel.style.transition = 'transform 4s cubic-bezier(.17,.67,.12,.99)';
+  wheel.style.transform = `rotate(${finalRot}deg)`;
+
+  setTimeout(() => {
+    rouletteSpinning = false;
+    document.getElementById('rouletteSpinBtn').disabled = false;
+    resolveRoulette(result);
+  }, 4300);
+}
+
+function resolveRoulette(result) {
+  const isRed = RED_NUMS.includes(result);
+  const cl = result===0 ? 'g' : isRed ? 'r' : 'b';
+  const clName = result===0 ? 'GREEN' : isRed ? 'RED' : 'BLACK';
+  document.getElementById('rouletteNum').textContent = result;
+  document.getElementById('rouletteNum').className = 'result-number-big '+cl;
+  document.getElementById('rouletteColor').textContent = clName;
+
+  rouletteHistory.unshift({n:result,c:cl});
+  if (rouletteHistory.length>12) rouletteHistory.pop();
+  document.getElementById('rouletteHist').innerHTML =
+    rouletteHistory.map(h=>`<div class="hist-dot ${h.c}">${h.n}</div>`).join('');
+
+  let won = false;
+  const t = rBet.type;
+  if (t==='number' && rBet.num===result) won=true;
+  else if (t==='red' && isRed && result!==0) won=true;
+  else if (t==='black' && !isRed && result!==0) won=true;
+  else if (t==='green' && result===0) won=true;
+  else if (t==='odd' && result!==0 && result%2===1) won=true;
+  else if (t==='even' && result!==0 && result%2===0) won=true;
+  else if (t==='1to18' && result>=1&&result<=18) won=true;
+  else if (t==='19to36' && result>=19&&result<=36) won=true;
+  else if (t==='d1' && result>=1&&result<=12) won=true;
+  else if (t==='d2' && result>=13&&result<=24) won=true;
+  else if (t==='d3' && result>=25&&result<=36) won=true;
+
+  const msg = document.getElementById('rouletteMsg');
+  if (won) {
+    const win = bets.roulette * (rBet.odds+1);
+    balance += win; updateBalanceUI(); saveBalance();
+    msg.className='result-msg win'; msg.textContent=`🎉 ${rBet.name} 当選！ +¥${win.toLocaleString()}`;
+    addXp(rBet.odds>=17?30:8);
+    if (rBet.odds>=17) confettiEffect();
+    showToast(`+¥${win.toLocaleString()}`,'win');
+  } else {
+    msg.className='result-msg loss'; msg.textContent=`${result} (${clName}) — ハズレ`;
+    addXp(2);
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// HORSE RACING
+// ══════════════════════════════════════════════════════════════
+const HORSES = [
+  { id:0, name:'サンダーボルト', emoji:'🟥🐴', color:'#ef4444', odds:2.0,  speed:0.88, trait:'安定型' },
+  { id:1, name:'ムーンシャドウ', emoji:'🟦🐴', color:'#3b82f6', odds:3.5,  speed:0.80, trait:'後半強い' },
+  { id:2, name:'ゴールデンウィング',emoji:'🟨🐴',color:'#f59e0b', odds:2.8,  speed:0.84, trait:'スタート良好' },
+  { id:3, name:'ダークホース',   emoji:'⬛🐴', color:'#6b7280', odds:7.0,  speed:0.70, trait:'大穴候補' },
+  { id:4, name:'サクラストーム', emoji:'🟩🐴', color:'#10b981', odds:4.5,  speed:0.77, trait:'末脚鋭い' },
+  { id:5, name:'スターライト',   emoji:'🟪🐴', color:'#8b5cf6', odds:5.5,  speed:0.74, trait:'気まぐれ' },
+];
+
+let horseSelected = new Set();
+let raceRunning = false;
+let horsePositions = []; // 0-100 (%)
+let raceAnimId = null;
+let raceFinishOrder = [];
+
+function horseInit() {
+  buildOddsGrid();
+  buildRaceTrack();
+  horseSelected = new Set();
+  horsePositions = HORSES.map(() => 0);
+  raceFinishOrder = [];
+  document.getElementById('winnerBanner').classList.remove('show');
+  document.getElementById('horseMsg').className = 'result-msg neutral';
+  document.getElementById('horseMsg').textContent = '馬を選んでBETしてください';
+  document.getElementById('raceStatusText').textContent = '馬を選んでください';
+  document.getElementById('raceStatusDot').className = 'race-status-dot';
+  document.getElementById('horseBetBtn').disabled = false;
+}
+
+function buildOddsGrid() {
+  const grid = document.getElementById('oddsGrid');
+  grid.innerHTML = '';
+  HORSES.forEach(h => {
+    const winPct = Math.round(100 / h.odds / (100/h.odds + 100/HORSES.reduce((s,x)=>s+1/x.odds,0) * 100/h.odds + 0.01) * 60 + 5);
+    const card = document.createElement('div');
+    card.className = 'odds-card';
+    card.id = 'hcard-' + h.id;
+    card.innerHTML = `
+      <div class="odds-card-top">
+        <span class="odds-horse-icon">${h.emoji}</span>
+        <div>
+          <div class="odds-horse-name">${h.name}</div>
+          <div class="odds-horse-trait">${h.trait}</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div>
+          <div class="odds-label">オッズ</div>
+          <div class="odds-value">${h.odds.toFixed(1)}倍</div>
+        </div>
+        <div style="text-align:right">
+          <div class="odds-label">勝率目安</div>
+          <div style="font-size:13px;font-weight:600;color:var(--muted2)">${winPct}%</div>
+        </div>
+      </div>
+      <div class="odds-bar"><div class="odds-bar-fill" style="width:${winPct}%;background:${h.color}"></div></div>
+      <div class="race-pos-badge" id="hpos-${h.id}"></div>
+    `;
+    card.onclick = () => toggleHorse(h.id);
+    grid.appendChild(card);
+  });
+}
+
+function buildRaceTrack() {
+  const track = document.getElementById('raceTrackInner');
+  // Remove old lanes
+  track.querySelectorAll('.horse-lane').forEach(e => e.remove());
+  const trackH = 220;
+  const laneH = Math.floor(trackH / HORSES.length);
+  HORSES.forEach((h, i) => {
+    const lane = document.createElement('div');
+    lane.className = 'horse-lane';
+    lane.style.top = (i * laneH + laneH/2 - 18) + 'px';
+    lane.style.height = laneH + 'px';
+    // lane divider
+    if (i > 0) {
+      const div = document.createElement('div');
+      div.className = 'race-lane';
+      div.style.top = (i * laneH) + 'px';
+      track.insertBefore(div, track.querySelector('.finish-line'));
+    }
+    // horse emoji
+    const horse = document.createElement('div');
+    horse.className = 'horse-emoji';
+    horse.id = 'hemoji-' + h.id;
+    horse.textContent = h.emoji.slice(-1) + ' '; // just the horse part
+    horse.style.left = '10px';
+    horse.style.color = h.color;
+    lane.appendChild(horse);
+    // name
+    const nameEl = document.createElement('div');
+    nameEl.className = 'horse-name-label';
+    nameEl.style.top = '0px';
+    nameEl.style.left = '10px';
+    nameEl.style.color = h.color;
+    nameEl.textContent = h.name;
+    lane.appendChild(nameEl);
+    track.insertBefore(lane, track.querySelector('.winner-banner'));
+  });
+}
+
+function toggleHorse(id) {
+  if (raceRunning) return;
+  if (horseSelected.has(id)) horseSelected.delete(id);
+  else horseSelected.add(id);
+  HORSES.forEach(h => {
+    const card = document.getElementById('hcard-' + h.id);
+    card.classList.toggle('sel', horseSelected.has(h.id));
+  });
+  const n = horseSelected.size;
+  document.getElementById('horseMsg').textContent =
+    n === 0 ? '馬を選んでBETしてください' : `${n}頭選択中 — 合計BET: ¥${(bets.horse * n).toLocaleString()}`;
+}
+
+function doHorseBet() {
+  if (raceRunning) return;
+  if (horseSelected.size === 0) { showToast('馬を選んでください'); return; }
+  const total = bets.horse * horseSelected.size;
+  if (balance < total) { showToast('残高が足りません'); return; }
+  balance -= total; updateBalanceUI(); saveBalance();
+  raceRunning = true;
+  document.getElementById('horseBetBtn').disabled = true;
+  document.getElementById('raceStatusDot').className = 'race-status-dot running';
+  document.getElementById('raceStatusText').textContent = 'レース中！';
+  document.getElementById('winnerBanner').classList.remove('show');
+  document.getElementById('horseMsg').className = 'result-msg neutral';
+  document.getElementById('horseMsg').textContent = '🏇 レース中...';
+  raceFinishOrder = [];
+
+  // Reset positions
+  horsePositions = HORSES.map(() => 0);
+  HORSES.forEach(h => {
+    const el = document.getElementById('hemoji-' + h.id);
+    if (el) el.style.left = '10px';
+  });
+
+  runRace();
+}
+
+function runRace() {
+  const trackWidth = document.getElementById('raceTrackInner').clientWidth - 80;
+  let finished = new Set();
+  let ticks = 0;
+
+  function tick() {
+    ticks++;
+    const allDone = finished.size >= HORSES.length;
+    if (allDone) {
+      cancelAnimationFrame(raceAnimId);
+      setTimeout(() => resolveRace(), 400);
+      return;
+    }
+
+    HORSES.forEach(h => {
+      if (finished.has(h.id)) return;
+      // Randomized speed: base speed ± noise + burst chance
+      const noise = (Math.random() - 0.5) * 0.12;
+      const burst = Math.random() < 0.04 ? 0.25 : 0;
+      // Trait effects
+      let speedMod = 0;
+      if (h.trait === '後半強い' && horsePositions[h.id] > 50) speedMod = 0.06;
+      if (h.trait === 'スタート良好' && horsePositions[h.id] < 30) speedMod = 0.08;
+      if (h.trait === '末脚鋭い' && horsePositions[h.id] > 70) speedMod = 0.10;
+      if (h.trait === '気まぐれ') speedMod = (Math.random() - 0.5) * 0.14;
+
+      const advance = (h.speed + noise + burst + speedMod) * 0.8;
+      horsePositions[h.id] = Math.min(100, horsePositions[h.id] + advance);
+
+      const pxPos = (horsePositions[h.id] / 100) * trackWidth + 10;
+      const el = document.getElementById('hemoji-' + h.id);
+      if (el) el.style.left = pxPos + 'px';
+
+      if (horsePositions[h.id] >= 100 && !finished.has(h.id)) {
+        finished.add(h.id);
+        raceFinishOrder.push(h.id);
+      }
+    });
+
+    if (ticks % 4 === 0) {
+      // Show live rank
+      const sorted = [...HORSES].sort((a,b) => horsePositions[b.id] - horsePositions[a.id]);
+      sorted.forEach((h, rank) => {
+        const pBadge = document.getElementById('hpos-' + h.id);
+        if (pBadge) {
+          pBadge.style.opacity = '1';
+          pBadge.textContent = ['🥇','🥈','🥉','4th','5th','6th'][rank] || (rank+1)+'th';
+        }
+      });
+    }
+
+    raceAnimId = requestAnimationFrame(tick);
+  }
+  raceAnimId = requestAnimationFrame(tick);
+}
+
+function resolveRace() {
+  raceRunning = false;
+  const winnerId = raceFinishOrder[0];
+  const winner = HORSES[winnerId];
+
+  // Show winner banner
+  document.getElementById('winnerEmoji').textContent = winner.emoji.slice(-1);
+  document.getElementById('winnerName').textContent = winner.name;
+  document.getElementById('winnerBanner').classList.add('show');
+
+  // Highlight winner card
+  HORSES.forEach(h => {
+    const card = document.getElementById('hcard-' + h.id);
+    card.classList.remove('sel', 'winner-card');
+    if (h.id === winnerId) card.classList.add('winner-card');
+  });
+
+  // Payout
+  const msg = document.getElementById('horseMsg');
+  document.getElementById('raceStatusDot').className = 'race-status-dot';
+  document.getElementById('raceStatusText').textContent = `${winner.name} が優勝！`;
+
+  if (horseSelected.has(winnerId)) {
+    const payout = Math.floor(bets.horse * winner.odds);
+    balance += payout; updateBalanceUI(); saveBalance();
+    msg.className = 'result-msg win';
+    msg.textContent = `🏆 ${winner.name} が優勝！ +¥${payout.toLocaleString()} (×${winner.odds})`;
+    addXp(Math.floor(winner.odds * 5));
+    confettiEffect();
+    showToast(`+¥${payout.toLocaleString()}`, 'win');
+  } else {
+    msg.className = 'result-msg loss';
+    msg.textContent = `${winner.name} が優勝 — ハズレ`;
+    addXp(2);
+    showToast('ハズレ…', 'loss');
+  }
+
+  document.getElementById('horseBetBtn').disabled = false;
+  horseSelected = new Set();
+  // Re-render odds grid to clear selections
+  setTimeout(() => {
+    buildOddsGrid();
+    buildRaceTrack();
+    // Restore winner highlight
+    const wc = document.getElementById('hcard-' + winnerId);
+    if (wc) {
+      wc.classList.add('winner-card');
+      const pb = document.getElementById('hpos-' + winnerId);
+      if (pb) { pb.style.opacity='1'; pb.textContent='🥇'; }
+    }
+  }, 100);
+}
+
+// ══════════════════════════════════════════════════════════════
+// HI-LO
+// ══════════════════════════════════════════════════════════════
+const HL_DECK = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const HL_SUITS = ['♠','♥','♦','♣'];
+let hlCard = null, hlStreak = 0, hlActive = false;
+
+function hlRandCard() {
+  const r=HL_DECK[Math.floor(Math.random()*HL_DECK.length)];
+  const s=HL_SUITS[Math.floor(Math.random()*HL_SUITS.length)];
+  return {r,s};
+}
+function hlVal(c){ if(['J','Q','K'].includes(c.r)) return 10; if(c.r==='A') return 1; return parseInt(c.r); }
+function makeHLCardEl(card) {
+  const isRed=card.s==='♥'||card.s==='♦';
+  const d=document.createElement('div');
+  d.className='hilo-card-big'+(isRed?' red':'');
+  d.innerHTML=`<div style="font-size:16px;font-weight:700">${card.r}</div><div class="hilo-card-big-suit">${card.s}</div>`;
+  return d;
+}
+
+function hiloInit() {
+  hlCard=null; hlStreak=0; hlActive=false;
+  document.getElementById('hiloCardPrev').innerHTML='';
+  document.getElementById('hiloCardNext').innerHTML='';
+  document.getElementById('hiloBtns').style.opacity='0.4'; document.getElementById('hiloBtns').style.pointerEvents='none';
+  document.getElementById('hiloMsg').className='result-msg neutral'; document.getElementById('hiloMsg').textContent='最初のカードを引きます';
+  document.getElementById('hiloStreak').textContent='0';
+  document.getElementById('hiloMult').textContent='1.5';
+  document.getElementById('hiloDealBtn').textContent='カードを引く 🎴'; document.getElementById('hiloDealBtn').disabled=false;
+}
+
+function hiloStart() {
+  if (!hlActive) {
+    if (balance<bets.hilo){showToast('残高が足りません');return;}
+    balance-=bets.hilo; updateBalanceUI(); saveBalance();
+    hlCard=hlRandCard(); hlStreak=0; hlActive=true;
+    document.getElementById('hiloCardPrev').innerHTML='';
+    const nextEl=document.getElementById('hiloCardNext');
+    nextEl.innerHTML=''; nextEl.appendChild(makeHLCardEl(hlCard));
+    document.getElementById('hiloBtns').style.opacity='1'; document.getElementById('hiloBtns').style.pointerEvents='all';
+    document.getElementById('hiloMsg').textContent='HIGH か LOW かを選んでください';
+    document.getElementById('hiloDealBtn').textContent='やめて精算する'; document.getElementById('hiloDealBtn').disabled=false;
+  } else {
+    // Cash out
+    const mult = Math.min(8, 1.5 + hlStreak * 0.5);
+    const win = Math.floor(bets.hilo * mult);
+    balance += win; updateBalanceUI(); saveBalance();
+    addXp(hlStreak * 5 + 3);
+    document.getElementById('hiloMsg').className='result-msg win';
+    document.getElementById('hiloMsg').textContent=`精算！ ×${mult.toFixed(1)} +¥${win.toLocaleString()}`;
+    showToast(`+¥${win.toLocaleString()}`,'win');
+    if(hlStreak>=3) confettiEffect();
+    hiloInit(); return;
+  }
+}
+
+function hiloGuess(guess) {
+  if (!hlActive || !hlCard) return;
+  const next = hlRandCard();
+  const prev = hlCard;
+  const prevV=hlVal(prev), nextV=hlVal(next);
+
+  // move card
+  const prevEl=document.getElementById('hiloCardPrev');
+  const nextEl=document.getElementById('hiloCardNext');
+  prevEl.innerHTML=''; prevEl.appendChild(makeHLCardEl(prev));
+  nextEl.innerHTML=''; nextEl.appendChild(makeHLCardEl(next));
+
+  const correct = (guess==='high' && nextV>prevV) || (guess==='low' && nextV<prevV);
+  const msg=document.getElementById('hiloMsg');
+
+  if (nextV===prevV) {
+    // tie = lose
+    balance=Math.max(0,balance); updateBalanceUI(); saveBalance();
+    msg.className='result-msg loss'; msg.textContent=`同じ数 (${next.r}) — 負け！`;
+    addXp(1);
+    hlActive=false; hlStreak=0;
+    document.getElementById('hiloBtns').style.opacity='0.4'; document.getElementById('hiloBtns').style.pointerEvents='none';
+    document.getElementById('hiloDealBtn').textContent='もう一度'; document.getElementById('hiloDealBtn').disabled=false;
+    document.getElementById('hiloStreak').textContent='0'; document.getElementById('hiloMult').textContent='1.5';
+    return;
+  }
+
+  if (correct) {
+    hlStreak++; hlCard=next;
+    const mult=Math.min(8,1.5+hlStreak*0.5);
+    msg.className='result-msg win'; msg.textContent=`✓ 正解！ 連勝 ${hlStreak}`;
+    document.getElementById('hiloStreak').textContent=hlStreak;
+    document.getElementById('hiloMult').textContent=mult.toFixed(1);
+    document.getElementById('hiloDealBtn').textContent='やめて精算する';
+  } else {
+    msg.className='result-msg loss'; msg.textContent=`✗ 不正解 (${next.r}) — 負け！`;
+    addXp(2);
+    hlActive=false; hlStreak=0; hlCard=null;
+    document.getElementById('hiloBtns').style.opacity='0.4'; document.getElementById('hiloBtns').style.pointerEvents='none';
+    document.getElementById('hiloDealBtn').textContent='もう一度'; document.getElementById('hiloDealBtn').disabled=false;
+    document.getElementById('hiloStreak').textContent='0'; document.getElementById('hiloMult').textContent='1.5';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// COIN FLIP
+// ══════════════════════════════════════════════════════════════
+let coinChoice = null, coinFlipping = false;
+let coinWins=0, coinLosses=0, coinGames=0;
+
+function selCoin(c) {
+  coinChoice=c;
+  document.getElementById('choiceHeads').classList.toggle('sel',c==='heads');
+  document.getElementById('chooseTails').classList.toggle('sel',c==='tails');
+}
+
+function doCoinFlip() {
+  if (coinFlipping) return;
+  if (!coinChoice){showToast('表か裏を選んでください');return;}
+  if (balance<bets.coin){showToast('残高が足りません');return;}
+  balance-=bets.coin; updateBalanceUI(); saveBalance();
+  coinFlipping=true;
+  document.getElementById('coinFlipBtn').disabled=true;
+  const coinEl=document.getElementById('coinDisplay');
+  coinEl.classList.add('flipping');
+  coinEl.textContent='🌀';
+
+  setTimeout(()=>{
+    coinEl.classList.remove('flipping');
+    const result=Math.random()<.5?'heads':'tails';
+    coinEl.textContent=result==='heads'?'🌟':'🌙';
+    coinGames++;
+    document.getElementById('coinTotal').textContent=coinGames;
+
+    const msg=document.getElementById('coinMsg');
+    if (result===coinChoice) {
+      const win=bets.coin*2; balance+=win; updateBalanceUI(); saveBalance();
+      coinWins++; document.getElementById('coinWins').textContent=coinWins;
+      msg.className='result-msg win'; msg.textContent=`${result==='heads'?'🌟 表':'🌙 裏'} — 当たり！ +¥${win.toLocaleString()}`;
+      addXp(5);
+      showToast(`+¥${win.toLocaleString()}`,'win');
+    } else {
+      coinLosses++; document.getElementById('coinLosses').textContent=coinLosses;
+      msg.className='result-msg loss'; msg.textContent=`${result==='heads'?'🌟 表':'🌙 裏'} — ハズレ`;
+      addXp(1);
+    }
+    coinFlipping=false;
+    document.getElementById('coinFlipBtn').disabled=false;
+  },700);
+}
+
+// ══════════════════════════════════════════════════════════════
+// RANKING / LEADERBOARD
+// ══════════════════════════════════════════════════════════════
+function renderLeaderboard() {
+  const users = allUsersCache || {};
+  const me = currentUser;
+  const entries = Object.entries(users)
+    .map(([name,u])=>({name,xp:u.xp||0,balance:u.balance||0,rank:getRank(u.xp||0)}))
+    .sort((a,b)=>b.xp-a.xp);
+
+  // My rank header
+  if (me && users[me]) {
+    const xp=users[me].xp||0, rank=getRank(xp), next=getNextRank(xp);
+    document.getElementById('myRankName').textContent=me;
+    document.getElementById('myRankXp').textContent=`XP ${xp.toLocaleString()}${next?' / '+next.minXp.toLocaleString():' MAX'}`;
+    document.getElementById('myRankIcon').textContent=rank.emoji;
+    const pct=next?Math.min(100,((xp-rank.minXp)/(next.minXp-rank.minXp))*100):100;
+    document.getElementById('myRankFill').style.width=pct+'%';
+    document.getElementById('myRankFill').style.background=rank.color;
+  }
+
+  const medals=['🥇','🥈','🥉'];
+  const list=document.getElementById('lbList');
+  if (!entries.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-style:italic">まだプレイヤーがいません</div>';return;}
+  list.innerHTML=entries.map((e,i)=>{
+    const pos=i+1, posClass=pos<=3?'p'+pos:'';
+    const disp=pos<=3?medals[pos-1]:pos;
+    return `<div class="lb-item${e.name===me?' me':''}">
+      <div class="lb-pos ${posClass}">${disp}</div>
+      <div class="lb-info">
+        <div class="lb-name">${e.name}${e.name===me?' <span style="font-size:11px;color:var(--accent)">（あなた）</span>':''}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+          <span class="badge badge-${e.rank.name.toLowerCase()}" style="font-size:9px">${e.rank.emoji} ${e.rank.name}</span>
+          <span class="lb-xp">XP ${e.xp.toLocaleString()}</span>
+        </div>
+      </div>
+      <div class="lb-balance">¥${e.balance.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+
+
+// ══════════════════════════════════════════════════════════════
+// BANK
+// ══════════════════════════════════════════════════════════════
+
+const INTEREST_RATE  = 0.001;   // 0.1% per hour (savings)
+const LOAN_RATE      = 0.001;   // 0.1% per hour (debt)
+const LOAN_MAX       = 1_000_000_000_000;
+const LOAN_PERIOD_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function getBankData() {
+  if (!currentUser || !currentUserData) return { savings:0, savingsTs:null, loan:0, loanTs:null, loanGrowthTs:null, history:[] };
+  return currentUserData.bank || { savings:0, savingsTs:null, loan:0, loanTs:null, loanGrowthTs:null, history:[] };
+}
+function saveBankData(d) {
+  if (!currentUser || !currentUserData) return;
+  currentUserData.bank = d;
+  fbSet('users/' + currentUser + '/bank', d);
+}
+
+// Apply interest / loan growth since last save
+function accrueBankInterest(d) {
+  const now = Date.now();
+  if (d.savings > 0 && d.savingsTs) {
+    const hrs = (now - d.savingsTs) / 3_600_000;
+    d.savings = Math.floor(d.savings * Math.pow(1 + INTEREST_RATE, hrs));
+    d.savingsTs = now;
+  }
+  if (d.loan > 0 && d.loanTs) {
+    const hrs = (now - d.loanTs) / 3_600_000;
+    d.loan = Math.min(LOAN_MAX, Math.floor(d.loan * Math.pow(1 + LOAN_RATE, hrs)));
+    // loanTs stays as original borrow time for deadline calc, use separate growth ts
+    if (!d.loanGrowthTs) d.loanGrowthTs = now;
+    const hrsG = (now - d.loanGrowthTs) / 3_600_000;
+    d.loan = Math.min(LOAN_MAX, Math.floor(d.loan * Math.pow(1 + LOAN_RATE, hrsG)));
+    d.loanGrowthTs = now;
+  }
+  return d;
+}
+
+function bankTab(t) {
+  ['deposit','withdraw','loan','repay'].forEach(id => {
+    document.getElementById('btab-'+id).classList.toggle('active', id===t);
+    document.getElementById('bform-'+id).classList.toggle('active', id===t);
+  });
+}
+
+function bankSetAll(mode) {
+  const d = getBankData();
+  if (!d) return;
+  accrueBankInterest(d);
+  if (mode === 'deposit')  document.getElementById('bankDepositAmt').value  = balance;
+  if (mode === 'withdraw') document.getElementById('bankWithdrawAmt').value = d.savings;
+  if (mode === 'repay')    document.getElementById('bankRepayAmt').value    = d.loan;
+}
+
+function addBankHistory(d, type, amount) {
+  if (!d.history) d.history = [];
+  d.history.unshift({ type, amount, ts: Date.now() });
+  if (d.history.length > 20) d.history.pop();
+}
+
+function doDeposit() {
+  const amt = parseInt(document.getElementById('bankDepositAmt').value);
+  if (!amt || amt <= 0) { showToast('金額を入力してください'); return; }
+  if (amt > balance)    { showToast('残高が足りません'); return; }
+  const d = getBankData(); accrueBankInterest(d);
+  balance -= amt; updateBalanceUI(); saveBalance();
+  d.savings += amt;
+  if (!d.savingsTs) d.savingsTs = Date.now();
+  addBankHistory(d, 'deposit', amt);
+  saveBankData(d);
+  document.getElementById('bankDepositAmt').value = '';
+  showToast(`¥${amt.toLocaleString()} 預金しました`, 'win');
+  renderBank();
+}
+
+function doWithdraw() {
+  const d = getBankData(); accrueBankInterest(d);
+  const amt = parseInt(document.getElementById('bankWithdrawAmt').value);
+  if (!amt || amt <= 0) { showToast('金額を入力してください'); return; }
+  if (amt > d.savings)  { showToast('預金残高が足りません'); return; }
+  d.savings -= amt;
+  if (d.savings === 0) d.savingsTs = null;
+  balance += amt; updateBalanceUI(); saveBalance();
+  addBankHistory(d, 'withdraw', amt);
+  saveBankData(d);
+  document.getElementById('bankWithdrawAmt').value = '';
+  showToast(`¥${amt.toLocaleString()} 引き出しました`);
+  renderBank();
+}
+
+function doLoan() {
+  const d = getBankData(); accrueBankInterest(d);
+  if (d.loan > 0) { showToast('既存の借金を返済してから借りてください'); return; }
+  const amt = parseInt(document.getElementById('bankLoanAmt').value);
+  if (!amt || amt <= 0)   { showToast('借入額を入力してください'); return; }
+  if (amt > LOAN_MAX)     { showToast('借入上限を超えています'); return; }
+  d.loan = amt;
+  d.loanTs = Date.now();
+  d.loanGrowthTs = Date.now();
+  balance += amt; updateBalanceUI(); saveBalance();
+  addBankHistory(d, 'loan', amt);
+  saveBankData(d);
+  document.getElementById('bankLoanAmt').value = '';
+  showToast(`¥${amt.toLocaleString()} 借入しました`, 'loss');
+  renderBank();
+}
+
+function doRepay() {
+  const d = getBankData(); accrueBankInterest(d);
+  if (d.loan === 0) { showToast('借金がありません'); return; }
+  const amt = parseInt(document.getElementById('bankRepayAmt').value);
+  if (!amt || amt <= 0) { showToast('返済額を入力してください'); return; }
+  if (amt > balance)    { showToast('残高が足りません'); return; }
+  const repay = Math.min(amt, d.loan);
+  balance -= repay; updateBalanceUI(); saveBalance();
+  d.loan -= repay;
+  if (d.loan <= 0) { d.loan = 0; d.loanTs = null; d.loanGrowthTs = null; }
+  addBankHistory(d, 'repay', repay);
+  saveBankData(d);
+  document.getElementById('bankRepayAmt').value = '';
+  showToast(d.loan === 0 ? '借金を完済しました！' : `¥${repay.toLocaleString()} 返済しました`);
+  renderBank();
+}
+
+function fmtMoney(n) {
+  if (n >= 1e12) return '¥' + (n/1e12).toFixed(2) + '兆';
+  if (n >= 1e8)  return '¥' + (n/1e8).toFixed(2) + '億';
+  if (n >= 1e4)  return '¥' + n.toLocaleString();
+  return '¥' + n.toLocaleString();
+}
+function fmtTime(ms) {
+  if (ms <= 0) return '期限切れ';
+  const d = Math.floor(ms/86400000);
+  const h = Math.floor((ms%86400000)/3600000);
+  const m = Math.floor((ms%3600000)/60000);
+  const s = Math.floor((ms%60000)/1000);
+  if (d > 0) return `残り ${d}日 ${h}時間 ${m}分`;
+  if (h > 0) return `残り ${h}時間 ${m}分 ${s}秒`;
+  return `残り ${m}分 ${s}秒`;
+}
+
+function renderBank() {
+  if (!currentUser) return;
+  const d = getBankData();
+  accrueBankInterest(d);
+  saveBankData(d);
+
+  // Savings
+  document.getElementById('bankSavingsVal').textContent = fmtMoney(d.savings);
+  if (d.savings > 0) {
+    const nextHr = Math.floor(d.savings * INTEREST_RATE);
+    document.getElementById('bankInterestPreview').textContent = `次の1時間の利子: +¥${nextHr.toLocaleString()}`;
+  } else {
+    document.getElementById('bankInterestPreview').textContent = '';
+  }
+
+  // Loan
+  const loanCard = document.getElementById('bankLoanCard');
+  if (d.loan > 0) {
+    loanCard.style.display = 'block';
+    document.getElementById('bankLoanVal').textContent = fmtMoney(d.loan);
+    const deadline = d.loanTs + LOAN_PERIOD_MS;
+    const remaining = deadline - Date.now();
+    const isUrgent = remaining < 24 * 3600 * 1000;
+    loanCard.classList.toggle('urgent', isUrgent);
+    const nextHrLoan = Math.floor(d.loan * LOAN_RATE);
+    document.getElementById('bankLoanMeta').textContent =
+      `1時間ごとに +¥${nextHrLoan.toLocaleString()} 増加（0.1%複利）`;
+    const timer = document.getElementById('bankLoanTimer');
+    timer.textContent = fmtTime(remaining);
+    timer.className = 'bank-loan-timer ' + (isUrgent ? 'danger' : 'safe');
+    document.getElementById('repayInfo').innerHTML =
+      `現在の借金: <strong style="color:var(--red)">${fmtMoney(d.loan)}</strong><br>
+       返済期限まで: <strong>${fmtTime(remaining)}</strong>`;
+    document.getElementById('loanBtn').disabled = true;
+    document.getElementById('loanBtn').textContent = '💸 既存の借金を返済してください';
+  } else {
+    loanCard.style.display = 'none';
+    document.getElementById('repayInfo').textContent = '借金はありません。';
+    document.getElementById('loanBtn').disabled = false;
+    document.getElementById('loanBtn').textContent = '💸 借りる';
+  }
+
+  // History
+  const hist = document.getElementById('bankHistory');
+  if (!d.history || !d.history.length) {
+    hist.innerHTML = '<div style="color:var(--muted);font-style:italic;font-size:13px;padding:10px 0">取引履歴なし</div>';
+  } else {
+    const labels = { deposit:'預金', withdraw:'引出', loan:'借入', repay:'返済' };
+    const isPos = { deposit:false, withdraw:true, loan:true, repay:false };
+    hist.innerHTML = d.history.map(tx => {
+      const dt = new Date(tx.ts);
+      const dateStr = `${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+      return `<div class="bank-tx">
+        <div>
+          <div style="font-weight:600;font-size:14px">${labels[tx.type] || tx.type}</div>
+          <div class="bank-tx-date">${dateStr}</div>
+        </div>
+        <div class="bank-tx-amount ${isPos[tx.type]?'pos':'neg'}">${isPos[tx.type]?'+':'-'}${fmtMoney(tx.amount)}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// Live update timer for bank screen
+let bankTimerInterval = null;
+function startBankTimer() {
+  if (bankTimerInterval) return;
+  bankTimerInterval = setInterval(() => {
+    if (document.getElementById('screen-bank').classList.contains('active')) {
+      renderBank();
+    }
+  }, 1000);
+}
+
+
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN — HORSE EDITOR
+// ══════════════════════════════════════════════════════════════
+const HORSE_CFG_KEY = 'royale_horse_cfg';
+
+function getHorseCfg() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(HORSE_CFG_KEY));
+    if (saved && saved.length === 6) return saved;
+  } catch {}
+  // Default from HORSES
+  return HORSES.map(h => ({ name: h.name, emoji: h.emoji, odds: h.odds, speed: h.speed, trait: h.trait, color: h.color }));
+}
+function saveHorseCfg(cfg) { localStorage.setItem(HORSE_CFG_KEY, JSON.stringify(cfg)); }
+
+// Apply saved config to HORSES at startup and after edit
+function applyHorseCfg() {
+  const cfg = getHorseCfg();
+  cfg.forEach((c, i) => {
+    HORSES[i].name  = c.name;
+    HORSES[i].emoji = c.emoji;
+    HORSES[i].odds  = c.odds;
+    HORSES[i].speed = c.speed;
+    HORSES[i].trait = c.trait;
+  });
+}
+
+function renderHorseEditor() {
+  const cfg = getHorseCfg();
+  const container = document.getElementById('adm-horse-editor');
+  if (!container) return;
+  container.innerHTML = cfg.map((h, i) => `
+    <div style="padding:14px 16px;border-bottom:1px solid rgba(196,163,90,0.1);${i===cfg.length-1?'border-bottom:none':''}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:20px">${h.emoji.slice(-1)}</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--gold2)">${h.name}</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:auto">馬 ${i+1}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <label class="label" style="font-size:10px">名前</label>
+          <input class="input" id="he-name-${i}" value="${h.name}" style="padding:8px 10px;font-size:13px">
+        </div>
+        <div>
+          <label class="label" style="font-size:10px">特徴・個性</label>
+          <input class="input" id="he-trait-${i}" value="${h.trait}" style="padding:8px 10px;font-size:13px">
+        </div>
+        <div>
+          <label class="label" style="font-size:10px">オッズ（倍率）</label>
+          <input class="input" type="number" id="he-odds-${i}" value="${h.odds}" min="1.1" max="99" step="0.1" style="padding:8px 10px;font-size:13px;font-family:'DM Mono',monospace">
+        </div>
+        <div>
+          <label class="label" style="font-size:10px">勝率（速度 0.5〜1.0）</label>
+          <input class="input" type="number" id="he-speed-${i}" value="${h.speed}" min="0.5" max="1.0" step="0.01" style="padding:8px 10px;font-size:13px;font-family:'DM Mono',monospace">
+        </div>
+      </div>
+    </div>
+  `).join('') + `
+    <div style="padding:14px 16px;border-top:1px solid rgba(196,163,90,0.15);display:flex;gap:8px;align-items:center">
+      <button class="btn btn-primary" style="flex:1" onclick="saveHorseEditor()">💾 変更を保存</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetHorseDefaults()">リセット</button>
+      <div id="he-msg" style="font-size:12px;color:var(--muted2);margin-left:8px"></div>
+    </div>
+  `;
+}
+
+function saveHorseEditor() {
+  const cfg = getHorseCfg();
+  for (let i = 0; i < 6; i++) {
+    const name  = document.getElementById('he-name-'+i)?.value.trim();
+    const trait = document.getElementById('he-trait-'+i)?.value.trim();
+    const odds  = parseFloat(document.getElementById('he-odds-'+i)?.value);
+    const speed = parseFloat(document.getElementById('he-speed-'+i)?.value);
+    if (!name || isNaN(odds) || isNaN(speed)) continue;
+    if (odds < 1.1 || odds > 99) { document.getElementById('he-msg').textContent = `馬${i+1}: オッズは1.1〜99`; return; }
+    if (speed < 0.5 || speed > 1.0) { document.getElementById('he-msg').textContent = `馬${i+1}: 速度は0.5〜1.0`; return; }
+    cfg[i].name = name; cfg[i].trait = trait; cfg[i].odds = odds; cfg[i].speed = speed;
+  }
+  saveHorseCfg(cfg);
+  applyHorseCfg();
+  const msg = document.getElementById('he-msg');
+  msg.textContent = '✓ 保存しました';
+  msg.style.color = 'var(--green)';
+  setTimeout(() => { msg.textContent = ''; }, 2000);
+  renderHorseEditor();
+}
+
+function resetHorseDefaults() {
+  if (!confirm('馬の設定をデフォルトに戻しますか？')) return;
+  localStorage.removeItem(HORSE_CFG_KEY);
+  // Restore defaults
+  const defaults = [
+    { name:'サンダーボルト', emoji:'🟥🐴', color:'#ef4444', odds:2.0,  speed:0.88, trait:'安定型' },
+    { name:'ムーンシャドウ', emoji:'🟦🐴', color:'#3b82f6', odds:3.5,  speed:0.80, trait:'後半強い' },
+    { name:'ゴールデンウィング',emoji:'🟨🐴',color:'#f59e0b', odds:2.8,  speed:0.84, trait:'スタート良好' },
+    { name:'ダークホース',   emoji:'⬛🐴', color:'#6b7280', odds:7.0,  speed:0.70, trait:'大穴候補' },
+    { name:'サクラストーム', emoji:'🟩🐴', color:'#10b981', odds:4.5,  speed:0.77, trait:'末脚鋭い' },
+    { name:'スターライト',   emoji:'🟪🐴', color:'#8b5cf6', odds:5.5,  speed:0.74, trait:'気まぐれ' },
+  ];
+  defaults.forEach((d, i) => Object.assign(HORSES[i], d));
+  saveHorseCfg(defaults);
+  renderHorseEditor();
+  document.getElementById('he-msg').textContent = 'リセットしました';
+}
+
+
+// ── Admin Horse Management ──
+const HORSES_STORAGE_KEY = 'royale_horses_custom';
+
+function loadHorses() {
+  const saved = localStorage.getItem(HORSES_STORAGE_KEY);
+  if (saved) {
+    try {
+      const custom = JSON.parse(saved);
+      custom.forEach((h, i) => { if (HORSES[i]) Object.assign(HORSES[i], h); });
+    } catch(e) {}
+  }
+}
+
+function admRenderHorses() {
+  const list = document.getElementById('adm-horse-list');
+  if (!list) return;
+  list.innerHTML = HORSES.map((h, i) => `
+    <div class="horse-editor-row">
+      <span style="font-size:18px">${h.emoji.slice(-1)}</span>
+      <input id="adm-hname-${i}" value="${h.name}" placeholder="馬名">
+      <input id="adm-htrait-${i}" value="${h.trait}" placeholder="特徴">
+      <input id="adm-hodds-${i}" type="number" value="${h.odds}" step="0.1" min="1.1" max="99" placeholder="倍率">
+      <input id="adm-hspeed-${i}" type="number" value="${h.speed}" step="0.01" min="0.3" max="1" placeholder="速度">
+      <span style="font-size:16px;cursor:pointer;opacity:.5;padding:0 4px" title="色" onclick="cyclHorseColor(${i})">🎨</span>
+    </div>
+  `).join('');
+}
+
+function cyclHorseColor(i) {
+  const colors = ['#ef4444','#3b82f6','#f59e0b','#6b7280','#10b981','#8b5cf6','#ec4899','#14b8a6'];
+  const cur = colors.indexOf(HORSES[i].color);
+  HORSES[i].color = colors[(cur + 1) % colors.length];
+  admRenderHorses();
+}
+
+function admSaveHorses() {
+  const updates = HORSES.map((h, i) => {
+    const name  = document.getElementById('adm-hname-'+i)?.value.trim()  || h.name;
+    const trait = document.getElementById('adm-htrait-'+i)?.value.trim() || h.trait;
+    const odds  = parseFloat(document.getElementById('adm-hodds-'+i)?.value)  || h.odds;
+    const speed = parseFloat(document.getElementById('adm-hspeed-'+i)?.value) || h.speed;
+    if (name)  HORSES[i].name  = name;
+    if (trait) HORSES[i].trait = trait;
+    if (odds >= 1.1 && odds <= 99) HORSES[i].odds = Math.round(odds*10)/10;
+    if (speed >= 0.3 && speed <= 1) HORSES[i].speed = Math.round(speed*100)/100;
+    return { name: HORSES[i].name, trait: HORSES[i].trait, odds: HORSES[i].odds, speed: HORSES[i].speed, color: HORSES[i].color };
+  });
+  localStorage.setItem(HORSES_STORAGE_KEY, JSON.stringify(updates));
+  const m = document.getElementById('adm-horse-msg');
+  m.textContent = '✓ 変更を保存しました'; m.style.color = 'var(--green)';
+  admRenderHorses();
+}
+
+function admResetHorses() {
+  localStorage.removeItem(HORSES_STORAGE_KEY);
+  // Reset to defaults
+  const defaults = [
+    { name:'サンダーボルト', emoji:'🟥🐴', color:'#ef4444', odds:2.0, speed:0.88, trait:'安定型' },
+    { name:'ムーンシャドウ', emoji:'🟦🐴', color:'#3b82f6', odds:3.5, speed:0.80, trait:'後半強い' },
+    { name:'ゴールデンウィング',emoji:'🟨🐴',color:'#f59e0b', odds:2.8, speed:0.84, trait:'スタート良好' },
+    { name:'ダークホース',   emoji:'⬛🐴', color:'#6b7280', odds:7.0, speed:0.70, trait:'大穴候補' },
+    { name:'サクラストーム', emoji:'🟩🐴', color:'#10b981', odds:4.5, speed:0.77, trait:'末脚鋭い' },
+    { name:'スターライト',   emoji:'🟪🐴', color:'#8b5cf6', odds:5.5, speed:0.74, trait:'気まぐれ' },
+  ];
+  defaults.forEach((d, i) => Object.assign(HORSES[i], d));
+  admRenderHorses();
+  const m = document.getElementById('adm-horse-msg');
+  m.textContent = '↩ デフォルトに戻しました'; m.style.color = 'var(--muted2)';
+}
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════════════════════
+function openAdminLogin() {
+  document.getElementById('admin-login-overlay').classList.add('show');
+  document.getElementById('adm-pass').value='';
+  document.getElementById('adm-err').style.display='none';
+  setTimeout(()=>document.getElementById('adm-pass').focus(),100);
+}
+function closeAdminLogin() { document.getElementById('admin-login-overlay').classList.remove('show'); }
+function checkAdmin() {
+  if (document.getElementById('adm-pass').value===ADMIN_PASS) {
+    closeAdminLogin();
+    openAdminPanel();
+  } else {
+    showErr('adm-err','パスワードが違います');
+    document.getElementById('adm-pass').value='';
+  }
+}
+function openAdminPanel() {
+  document.getElementById('admin-panel-overlay').classList.add('show');
+  renderAdminPanel();
+  renderHorseEditor();
+}
+function closeAdminPanel() { document.getElementById('admin-panel-overlay').classList.remove('show'); }
+
+function renderAdminPanel() {
+  admRenderHorses();
+  const users=allUsersCache||{}, names=Object.keys(users);
+  const suspended=names.filter(n=>users[n].suspended).length;
+  const totalBal=names.reduce((s,n)=>s+(users[n].balance||0),0);
+  document.getElementById('adm-stats').innerHTML=[
+    ['👥 登録数',names.length+'名'],
+    ['🚫 停止中',suspended+'名'],
+    ['💰 総残高','¥'+totalBal.toLocaleString()],
+    ['🎮 現セッション',sessionStorage.getItem('royale_user')||'—'],
+  ].map(([l,v])=>`<div class="admin-stat-card"><div class="admin-stat-val">${v}</div><div class="admin-stat-label">${l}</div></div>`).join('');
+
+  if (!names.length){document.getElementById('adm-users').innerHTML='<div style="color:var(--muted);font-style:italic;padding:10px">登録ユーザーなし</div>';return;}
+  document.getElementById('adm-users').innerHTML=names.map(n=>{
+    const u=users[n];
+    return `<div class="user-row${u.suspended?' suspended':''}">
+      <div class="user-row-name">${n}${u.suspended?' 🚫':''}</div>
+      <div class="user-row-bal">¥${(u.balance||0).toLocaleString()} / XP${u.xp||0}</div>
+      <div class="user-row-acts">
+        <button class="btn btn-${u.suspended?'success':'danger'} btn-sm" onclick="admToggle('${n}')">${u.suspended?'解除':'停止'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="admQuickConfiscate('${n}')">没収</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function admMsg(msg,ok=true){const e=document.getElementById('adm-msg');e.textContent=msg;e.style.color=ok?'var(--green)':'var(--red)';}
+function admGetTarget(){const t=document.getElementById('adm-target').value.trim();if(!t){admMsg('ユーザー名を入力',false);return null;}if(!allUsersCache||!allUsersCache[t]){admMsg('存在しないユーザー',false);return null;}return t;}
+function admToggle(name){const u=allUsersCache||{};u[name].suspended=!u[name].suspended;fbSet('users/'+name+'/suspended',u[name].suspended);admMsg(name+' を'+(u[name].suspended?'停止':'解除'));renderAdminPanel();}
+function admQuickConfiscate(name){if(!allUsersCache||!allUsersCache[name])return;allUsersCache[name].balance=0;fbSet('users/'+name+'/balance',0);admMsg(name+' の通貨を没収');renderAdminPanel();}
+function admSuspend(){const t=admGetTarget();if(!t)return;if(!allUsersCache[t])return;allUsersCache[t].suspended=true;fbSet('users/'+t+'/suspended',true);admMsg(t+' を停止');renderAdminPanel();}
+function admUnsuspend(){const t=admGetTarget();if(!t)return;if(!allUsersCache[t])return;allUsersCache[t].suspended=false;fbSet('users/'+t+'/suspended',false);admMsg(t+' を解除');renderAdminPanel();}
+function admConfiscate(){const t=admGetTarget();if(!t)return;if(!allUsersCache[t])return;allUsersCache[t].balance=0;fbSet('users/'+t+'/balance',0);admMsg(t+' の通貨を没収');renderAdminPanel();}
+function admSetCurrency(){const t=admGetTarget();if(!t)return;const v=parseInt(document.getElementById('adm-currency').value);if(isNaN(v)||v<0){admMsg('正しい金額を入力',false);return;}if(!allUsersCache[t])return;allUsersCache[t].balance=v;fbSet('users/'+t+'/balance',v);admMsg(t+' の残高を ¥'+v.toLocaleString()+' に設定');renderAdminPanel();}
+function admDelete(){const t=admGetTarget();if(!t)return;if(!confirm(t+' を削除しますか？'))return;delete allUsersCache[t];fbRemove('users/'+t);admMsg(t+' を削除');renderAdminPanel();}
+
+
+initFirebase();
+</script>
+</body>
+</html>
