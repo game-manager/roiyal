@@ -435,35 +435,6 @@ details[open] .rule-box summary::after{content:'▴'}
 .hist-dot.b{background:rgba(100,116,139,.18);color:var(--muted2)}
 .hist-dot.g{background:rgba(46,204,142,.13);color:var(--green)}
 
-/* ══════════════════ HI-LO ══════════════════ */
-.hilo-wrap{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:26px 18px;margin-bottom:14px;text-align:center;
-}
-.hilo-card-display{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:18px}
-.hilo-card-big{
-  width:86px;height:122px;background:#fff;border-radius:10px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-size:17px;font-weight:800;color:#111;box-shadow:0 6px 24px rgba(0,0,0,.5);gap:3px;
-  animation:dealAnim .3s ease-out;
-}
-@keyframes dealAnim{from{opacity:0;transform:translateY(-14px) rotate(-3deg)}to{opacity:1;transform:none}}
-.hilo-card-big.red{color:#dc2626}
-.hilo-card-big-suit{font-size:30px}
-.hilo-vs{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.1em}
-.hilo-btn-row{display:flex;gap:10px;justify-content:center}
-.hilo-btn{
-  flex:1;max-width:128px;padding:13px;border-radius:10px;font-size:20px;cursor:pointer;
-  border:1px solid var(--border);background:var(--bg);transition:all .14s;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-}
-.hilo-btn span{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.hilo-btn:hover{transform:translateY(-2px)}
-.hilo-btn.higher:hover{border-color:var(--green);background:rgba(46,204,142,.07)}
-.hilo-btn.lower:hover{border-color:var(--red);background:rgba(224,85,85,.07)}
-.hilo-streak{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-top:10px}
-.hilo-streak span{color:var(--gold);font-weight:700}
-
 /* ══════════════════ COIN FLIP ══════════════════ */
 .coin-wrap{
   background:var(--surface);border:1px solid var(--border);
@@ -492,59 +463,29 @@ details[open] .rule-box summary::after{content:'▴'}
 .coin-stat-val.w{color:var(--green)}.coin-stat-val.l{color:var(--red)}
 .coin-stat-label{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.1em;text-transform:uppercase}
 
-/* ══════════════════ HORSE RACING ══════════════════ */
-.race-track{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:18px;margin-bottom:14px;
+/* ══════════════════ BLACKJACK ══════════════════ */
+.hilo-card-big{
+  width:86px;height:122px;background:#fff;border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:17px;font-weight:800;color:#111;box-shadow:0 6px 24px rgba(0,0,0,.5);gap:3px;
+  animation:dealAnim .3s ease-out;
 }
-.race-track-inner{
-  position:relative;height:216px;
-  background:linear-gradient(180deg,#071a07,#0d2e0d,#071a07);
-  border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.05);
-}
-.race-lane{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.05)}
-.finish-line{
-  position:absolute;top:0;bottom:0;right:56px;width:3px;
-  background:repeating-linear-gradient(180deg,#fff 0,#fff 7px,transparent 7px,transparent 14px);
-  opacity:.4;z-index:2;
-}
-.horse-lane{position:absolute;left:0;right:0;height:36px;display:flex;align-items:center}
-.horse-emoji{position:absolute;left:10px;font-size:20px;transition:left .08s linear;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));z-index:3}
-.horse-name-label{position:absolute;left:10px;font-size:8px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.04em;top:2px;z-index:3;pointer-events:none;font-family:'DM Mono',monospace}
-.winner-banner{
-  position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.78);
-  display:none;align-items:center;justify-content:center;flex-direction:column;gap:5px;
-}
-.winner-banner.show{display:flex}
-.winner-banner-title{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;font-family:'Tenor Sans',serif}
-.winner-banner-horse{font-size:34px}
-.winner-banner-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold3)}
-.odds-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
-.odds-card{
-  background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  padding:11px;cursor:pointer;transition:all .14s;position:relative;
-}
-.odds-card:hover{border-color:var(--border2)}
-.odds-card.sel{border-color:var(--gold);background:rgba(201,168,76,.06)}
-.odds-card.winner-card{border-color:var(--gold2);background:rgba(201,168,76,.06)}
-.odds-card-top{display:flex;align-items:center;gap:7px;margin-bottom:5px}
-.odds-horse-icon{font-size:20px}
-.odds-horse-name{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em}
-.odds-horse-trait{font-size:10px;color:var(--muted);line-height:1.3;letter-spacing:.03em}
-.odds-value{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--gold2)}
-.odds-label{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.odds-bar{height:2px;background:var(--surface2);border-radius:2px;margin-top:7px;overflow:hidden}
-.odds-bar-fill{height:100%;border-radius:2px}
-.race-pos-badge{position:absolute;top:7px;right:8px;font-size:13px;font-weight:800;opacity:0;transition:opacity .3s}
-.odds-card.winner-card .race-pos-badge{opacity:1}
-.race-status{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 13px;background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius-sm);margin-bottom:10px;font-size:12px;letter-spacing:.04em;
-}
-.race-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}
-.race-dot.running{background:var(--green);animation:dotBlink .8s ease-in-out infinite}
-@keyframes dotBlink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes dealAnim{from{opacity:0;transform:translateY(-14px) rotate(-3deg)}to{opacity:1;transform:none}}
+.hilo-card-big.red{color:#dc2626}
+.hilo-card-big-suit{font-size:30px}
+.bj-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;margin-bottom:14px}
+.bj-section{margin-bottom:16px}
+.bj-section-label{font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-family:'Tenor Sans',serif}
+.bj-cards{display:flex;gap:8px;flex-wrap:wrap;align-items:center;min-height:122px}
+.bj-total{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted2);margin-top:6px}
+.bj-total span{color:var(--gold);font-weight:700}
+.bj-card-back{width:86px;height:122px;background:linear-gradient(135deg,#1a2a1a,#0d1a0d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:38px;border:1px solid var(--border2);box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.bj-btn-row{display:flex;gap:10px;justify-content:center;margin-bottom:4px}
+.bj-btn{flex:1;max-width:140px;padding:13px;border-radius:10px;font-size:20px;cursor:pointer;border:1px solid var(--border);background:var(--bg);transition:all .14s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bj-btn span{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.bj-btn:hover{transform:translateY(-2px)}
+.bj-btn.hit:hover{border-color:var(--green);background:rgba(46,204,142,.07)}
+.bj-btn.stand:hover{border-color:var(--red);background:rgba(224,85,85,.07)}
 
 /* ══════════════════ RANKING ══════════════════ */
 .rank-header-card{
@@ -630,19 +571,6 @@ details[open] .rule-box summary::after{content:'▴'}
 .admin-input-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
 .admin-input-row .input{flex:1;min-width:100px;padding:9px 11px;font-size:13px}
 .admin-msg{font-size:12px;min-height:18px;color:var(--muted2);margin-top:8px;letter-spacing:.03em}
-
-/* Horse editor */
-.adm-horse-row{
-  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:11px;margin-bottom:6px;
-}
-.adm-horse-row-top{display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap}
-.adm-input{
-  padding:7px 10px;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;
-  outline:none;flex:1;min-width:80px;transition:border-color .14s;
-}
-.adm-input:focus{border-color:var(--gold)}
 
 /* CONFETTI */
 .confetti-piece{position:fixed;pointer-events:none;z-index:9990;border-radius:2px;animation:confettiFall linear forwards}
@@ -744,14 +672,6 @@ details[open] .rule-box summary::after{content:'▴'}
         <div class="admin-msg" id="adm-msg"></div>
       </div>
     </div>
-    <div class="admin-section">
-      <div class="admin-section-title">🐴 競馬 — 馬の設定</div>
-      <div id="adm-horse-editor"></div>
-      <div style="display:flex;gap:7px;margin-top:10px">
-        <button class="btn btn-gold btn-sm" onclick="admSaveHorses()">設定を保存</button>
-        <button class="btn btn-outline btn-sm" onclick="admResetHorses()">リセット</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -796,9 +716,8 @@ details[open] .rule-box summary::after{content:'▴'}
       <div class="game-grid">
         <div class="game-card" onclick="openGame('slots')"><div class="game-card-icon">🎰</div><div class="game-card-name">スロット</div><div class="game-card-desc">3リール・クラシック</div><div class="game-card-tag">定番</div></div>
         <div class="game-card" onclick="openGame('roulette')"><div class="game-card-icon">🎡</div><div class="game-card-name">ルーレット</div><div class="game-card-desc">欧州式・37マス</div></div>
-        <div class="game-card" onclick="openGame('hilo')"><div class="game-card-icon">🔼</div><div class="game-card-name">ハイ＆ロー</div><div class="game-card-desc">次のカードを予測</div></div>
         <div class="game-card" onclick="openGame('coinflip')"><div class="game-card-icon">🪙</div><div class="game-card-name">コインフリップ</div><div class="game-card-desc">50/50の運勝負</div></div>
-        <div class="game-card" style="grid-column:1/-1" onclick="openGame('horse')"><div class="game-card-icon">🐴</div><div class="game-card-name">競馬</div><div class="game-card-desc">6頭のレース — オッズに賭けろ</div><div class="game-card-tag">NEW</div></div>
+        <div class="game-card" style="grid-column:1/-1" onclick="openGame('blackjack')"><div class="game-card-icon">🃏</div><div class="game-card-name">ブラックジャック</div><div class="game-card-desc">21を目指してディーラーに勝て</div><div class="game-card-tag">NEW</div></div>
       </div>
     </div>
 
@@ -842,21 +761,29 @@ details[open] .rule-box summary::after{content:'▴'}
       <button class="btn btn-gold w-full btn-lg" id="rouletteSpinBtn" onclick="doRouletteSpın()" style="margin-top:12px">SPIN</button>
     </div>
 
-    <!-- HI-LO -->
-    <div class="screen" id="screen-hilo">
-      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">ハイ＆ロー</div><div class="game-header-sub">Predict the next card</div></div></div>
-      <div class="rule-box"><p>現在のカードより次が<strong>高いか低いか</strong>を予測。連勝で最大×8倍。A=1、絵札=10、同数は負け。</p></div>
-      <div class="hilo-wrap">
-        <div class="hilo-card-display"><div id="hiloCardPrev" style="opacity:.3;transform:scale(.85);transition:all .3s"></div><div class="hilo-vs">VS</div><div id="hiloCardNext"></div></div>
-        <div class="hilo-btn-row" id="hiloBtns" style="opacity:.4;pointer-events:none">
-          <div class="hilo-btn higher" onclick="hiloGuess('high')">🔼<span>HIGH</span></div>
-          <div class="hilo-btn lower"  onclick="hiloGuess('low')">🔽<span>LOW</span></div>
+    <!-- BLACKJACK -->
+    <div class="screen" id="screen-blackjack">
+      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">ブラックジャック</div><div class="game-header-sub">Beat the dealer · 21</div></div></div>
+      <div class="rule-box"><p>21に近い数を目指す。ブラックジャック（最初の2枚で21）は<strong>1.5倍</strong>払い出し。ディーラーは16以下でヒット、17以上でストップ。</p></div>
+      <div class="bj-wrap">
+        <div class="bj-section">
+          <div class="bj-section-label">ディーラー</div>
+          <div class="bj-cards" id="bjDealerCards"></div>
+          <div class="bj-total">合計: <span id="bjDealerTotal">—</span></div>
         </div>
-        <div class="result-msg neutral" id="hiloMsg" style="margin-top:12px">最初のカードを引きます</div>
-        <div class="hilo-streak">連勝: <span id="hiloStreak">0</span>　倍率: <span id="hiloMult">1.5</span>×</div>
+        <div class="bj-section" style="margin-bottom:0">
+          <div class="bj-section-label">あなた</div>
+          <div class="bj-cards" id="bjPlayerCards"></div>
+          <div class="bj-total">合計: <span id="bjPlayerTotal">—</span></div>
+        </div>
       </div>
-      <div class="bet-row"><span class="bet-lbl">BET</span><button class="stepper" onclick="changeBet('hilo',-50)">−</button><div class="bet-amt" id="hiloBetDisplay">¥200</div><button class="stepper" onclick="changeBet('hilo',50)">＋</button></div>
-      <button class="btn btn-gold w-full btn-lg" id="hiloDealBtn" onclick="hiloStart()">カードを引く</button>
+      <div class="bj-btn-row">
+        <div class="bj-btn hit" id="bjHitBtn" onclick="bjHit()" style="opacity:.35;pointer-events:none">🃏<span>HIT</span></div>
+        <div class="bj-btn stand" id="bjStandBtn" onclick="bjStand()" style="opacity:.35;pointer-events:none">✋<span>STAND</span></div>
+      </div>
+      <div class="result-msg neutral" id="bjMsg" style="margin-top:10px">カードを配ります</div>
+      <div class="bet-row"><span class="bet-lbl">BET</span><button class="stepper" onclick="changeBet('blackjack',-50)">−</button><div class="bet-amt" id="blackjackBetDisplay">¥200</div><button class="stepper" onclick="changeBet('blackjack',50)">＋</button></div>
+      <button class="btn btn-gold w-full btn-lg" id="bjDealBtn" onclick="bjDeal()">DEAL</button>
     </div>
 
     <!-- COIN FLIP -->
@@ -878,21 +805,6 @@ details[open] .rule-box summary::after{content:'▴'}
       </div>
       <div class="bet-row"><span class="bet-lbl">BET</span><button class="stepper" onclick="changeBet('coin',-50)">−</button><div class="bet-amt" id="coinBetDisplay">¥100</div><button class="stepper" onclick="changeBet('coin',50)">＋</button></div>
       <button class="btn btn-gold w-full btn-lg" id="coinFlipBtn" onclick="doCoinFlip()">FLIP</button>
-    </div>
-
-    <!-- HORSE RACING -->
-    <div class="screen" id="screen-horse">
-      <div class="game-header"><div class="back-btn" onclick="closeGame()">←</div><div><div class="game-header-title">競馬</div><div class="game-header-sub">Horse Racing · 6 Runners</div></div></div>
-      <details style="margin-bottom:14px"><summary class="rule-box">ルール説明</summary><div><p style="font-size:12px;color:var(--muted2);line-height:1.7;padding-top:8px">6頭から賭けたい馬を選んでBET。複数選択可能（各馬にbet額が適用）。オッズ高い馬ほど配当大。管理者が馬名・オッズ・速度を変更できます。</p></div></details>
-      <div class="race-track">
-        <div class="race-status"><div><span class="race-dot" id="raceStatusDot"></span><span id="raceStatusText">馬を選んでください</span></div><div id="raceCountdown" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)"></div></div>
-        <div class="race-track-inner" id="raceTrackInner"><div class="finish-line"></div><div class="winner-banner" id="winnerBanner"><div class="winner-banner-title">🏆 Winner!</div><div class="winner-banner-horse" id="winnerEmoji"></div><div class="winner-banner-name" id="winnerName"></div></div></div>
-      </div>
-      <div class="label-xs" style="margin-bottom:9px">馬を選ぶ（複数可）</div>
-      <div class="odds-grid" id="oddsGrid"></div>
-      <div class="bet-row"><span class="bet-lbl">BET/頭</span><button class="stepper" onclick="changeBet('horse',-50)">−</button><div class="bet-amt" id="horseBetDisplay">¥200</div><button class="stepper" onclick="changeBet('horse',50)">＋</button></div>
-      <div class="result-msg neutral" id="horseMsg">馬を選んでBETしてください</div>
-      <button class="btn btn-gold w-full btn-lg" id="horseBetBtn" onclick="doHorseBet()" style="margin-top:12px">BET & RACE</button>
     </div>
 
     <!-- RANKING -->
@@ -993,26 +905,20 @@ function initFirebase() {
   }
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   db = firebase.database();
-  // Load horse config from Firebase on start
-  fbGet('horse_cfg').then(cfg => {
-    if (cfg && cfg.length === 6) {
-      localStorage.setItem(HORSE_CFG_KEY, JSON.stringify(cfg));
-    }
-    // Auto-login
-    const u = sessionStorage.getItem('royale_user');
-    if (u) {
-      fbGet('users/' + u).then(data => {
-        if (data && !data.suspended) {
-          currentUserData = data;
-          enterApp(u);
-        } else {
-          sessionStorage.removeItem('royale_user');
-        }
-      });
-    }
-    // Start live listener for all users (for leaderboard + admin)
-    startUsersListener();
-  });
+  // Auto-login
+  const u = sessionStorage.getItem('royale_user');
+  if (u) {
+    fbGet('users/' + u).then(data => {
+      if (data && !data.suspended) {
+        currentUserData = data;
+        enterApp(u);
+      } else {
+        sessionStorage.removeItem('royale_user');
+      }
+    });
+  }
+  // Start live listener for all users (for leaderboard + admin)
+  startUsersListener();
 }
 
 // ── Firebase helpers ──
@@ -1294,9 +1200,7 @@ function openGame(id) {
   document.getElementById('screen-lobby').classList.remove('active');
   document.getElementById('screen-'+id).classList.add('active');
   currentScreen = id;
-  // Init hilo on open
-  if (id === 'hilo') hiloInit();
-  if (id === 'horse') horseInit();
+  if (id === 'blackjack') bjInit();
 }
 function closeGame() {
   document.getElementById('screen-'+currentScreen).classList.remove('active');
@@ -1320,9 +1224,9 @@ function navTo(id) {
 // ══════════════════════════════════════════════════════════════
 // BET CONTROLS
 // ══════════════════════════════════════════════════════════════
-const bets = { slot:100, roulette:200, hilo:200, coin:100, horse:200 };
-const betLimits = { slot:[50,2000], roulette:[50,2000], hilo:[50,2000], coin:[50,2000], horse:[50,2000] };
-const betDisplayIds = { slot:'slotBetDisplay', roulette:'rouletteBetDisplay', hilo:'hiloBetDisplay', coin:'coinBetDisplay', horse:'horseBetDisplay' };
+const bets = { slot:100, roulette:200, coin:100, blackjack:200 };
+const betLimits = { slot:[50,2000], roulette:[50,2000], coin:[50,2000], blackjack:[50,2000] };
+const betDisplayIds = { slot:'slotBetDisplay', roulette:'rouletteBetDisplay', coin:'coinBetDisplay', blackjack:'blackjackBetDisplay' };
 function changeBet(game, delta) {
   const [mn, mx] = betLimits[game];
   bets[game] = Math.max(mn, Math.min(mx, bets[game] + delta));
@@ -1552,355 +1456,168 @@ function resolveRoulette(result) {
 
 
 // ══════════════════════════════════════════════════════════════
-// HORSE RACING
+// BLACKJACK
 // ══════════════════════════════════════════════════════════════
-const HORSES = [
-  { id:0, name:'サンダーボルト', emoji:'🟥🐴', color:'#ef4444', odds:2.0,  speed:0.88, trait:'安定型' },
-  { id:1, name:'ムーンシャドウ', emoji:'🟦🐴', color:'#3b82f6', odds:3.5,  speed:0.80, trait:'後半強い' },
-  { id:2, name:'ゴールデンウィング',emoji:'🟨🐴',color:'#f59e0b', odds:2.8,  speed:0.84, trait:'スタート良好' },
-  { id:3, name:'ダークホース',   emoji:'⬛🐴', color:'#6b7280', odds:7.0,  speed:0.70, trait:'大穴候補' },
-  { id:4, name:'サクラストーム', emoji:'🟩🐴', color:'#10b981', odds:4.5,  speed:0.77, trait:'末脚鋭い' },
-  { id:5, name:'スターライト',   emoji:'🟪🐴', color:'#8b5cf6', odds:5.5,  speed:0.74, trait:'気まぐれ' },
-];
+const BJ_RANKS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const BJ_SUITS = ['♠','♥','♦','♣'];
+let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjActive = false;
 
-let horseSelected = new Set();
-let raceRunning = false;
-let horsePositions = []; // 0-100 (%)
-let raceAnimId = null;
-let raceFinishOrder = [];
-
-function horseInit() {
-  buildOddsGrid();
-  buildRaceTrack();
-  horseSelected = new Set();
-  horsePositions = HORSES.map(() => 0);
-  raceFinishOrder = [];
-  document.getElementById('winnerBanner').classList.remove('show');
-  document.getElementById('horseMsg').className = 'result-msg neutral';
-  document.getElementById('horseMsg').textContent = '馬を選んでBETしてください';
-  document.getElementById('raceStatusText').textContent = '馬を選んでください';
-  document.getElementById('raceStatusDot').className = 'race-status-dot';
-  document.getElementById('horseBetBtn').disabled = false;
-}
-
-function buildOddsGrid() {
-  const grid = document.getElementById('oddsGrid');
-  grid.innerHTML = '';
-  HORSES.forEach(h => {
-    const winPct = Math.round(100 / h.odds / (100/h.odds + 100/HORSES.reduce((s,x)=>s+1/x.odds,0) * 100/h.odds + 0.01) * 60 + 5);
-    const card = document.createElement('div');
-    card.className = 'odds-card';
-    card.id = 'hcard-' + h.id;
-    card.innerHTML = `
-      <div class="odds-card-top">
-        <span class="odds-horse-icon">${h.emoji}</span>
-        <div>
-          <div class="odds-horse-name">${h.name}</div>
-          <div class="odds-horse-trait">${h.trait}</div>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-end">
-        <div>
-          <div class="odds-label">オッズ</div>
-          <div class="odds-value">${h.odds.toFixed(1)}倍</div>
-        </div>
-        <div style="text-align:right">
-          <div class="odds-label">勝率目安</div>
-          <div style="font-size:13px;font-weight:600;color:var(--muted2)">${winPct}%</div>
-        </div>
-      </div>
-      <div class="odds-bar"><div class="odds-bar-fill" style="width:${winPct}%;background:${h.color}"></div></div>
-      <div class="race-pos-badge" id="hpos-${h.id}"></div>
-    `;
-    card.onclick = () => toggleHorse(h.id);
-    grid.appendChild(card);
-  });
-}
-
-function buildRaceTrack() {
-  const track = document.getElementById('raceTrackInner');
-  // Remove old lanes
-  track.querySelectorAll('.horse-lane').forEach(e => e.remove());
-  const trackH = 220;
-  const laneH = Math.floor(trackH / HORSES.length);
-  HORSES.forEach((h, i) => {
-    const lane = document.createElement('div');
-    lane.className = 'horse-lane';
-    lane.style.top = (i * laneH + laneH/2 - 18) + 'px';
-    lane.style.height = laneH + 'px';
-    // lane divider
-    if (i > 0) {
-      const div = document.createElement('div');
-      div.className = 'race-lane';
-      div.style.top = (i * laneH) + 'px';
-      track.insertBefore(div, track.querySelector('.finish-line'));
-    }
-    // horse emoji
-    const horse = document.createElement('div');
-    horse.className = 'horse-emoji';
-    horse.id = 'hemoji-' + h.id;
-    horse.textContent = h.emoji.slice(-1) + ' '; // just the horse part
-    horse.style.left = '10px';
-    horse.style.color = h.color;
-    lane.appendChild(horse);
-    // name
-    const nameEl = document.createElement('div');
-    nameEl.className = 'horse-name-label';
-    nameEl.style.top = '0px';
-    nameEl.style.left = '10px';
-    nameEl.style.color = h.color;
-    nameEl.textContent = h.name;
-    lane.appendChild(nameEl);
-    track.insertBefore(lane, track.querySelector('.winner-banner'));
-  });
-}
-
-function toggleHorse(id) {
-  if (raceRunning) return;
-  if (horseSelected.has(id)) horseSelected.delete(id);
-  else horseSelected.add(id);
-  HORSES.forEach(h => {
-    const card = document.getElementById('hcard-' + h.id);
-    card.classList.toggle('sel', horseSelected.has(h.id));
-  });
-  const n = horseSelected.size;
-  document.getElementById('horseMsg').textContent =
-    n === 0 ? '馬を選んでBETしてください' : `${n}頭選択中 — 合計BET: ¥${(bets.horse * n).toLocaleString()}`;
-}
-
-function doHorseBet() {
-  if (raceRunning) return;
-  if (horseSelected.size === 0) { showToast('馬を選んでください'); return; }
-  const total = bets.horse * horseSelected.size;
-  if (balance < total) { showToast('残高が足りません'); return; }
-  balance -= total; updateBalanceUI(); saveBalance();
-  raceRunning = true;
-  document.getElementById('horseBetBtn').disabled = true;
-  document.getElementById('raceStatusDot').className = 'race-status-dot running';
-  document.getElementById('raceStatusText').textContent = 'レース中！';
-  document.getElementById('winnerBanner').classList.remove('show');
-  document.getElementById('horseMsg').className = 'result-msg neutral';
-  document.getElementById('horseMsg').textContent = '🏇 レース中...';
-  raceFinishOrder = [];
-
-  // Reset positions
-  horsePositions = HORSES.map(() => 0);
-  HORSES.forEach(h => {
-    const el = document.getElementById('hemoji-' + h.id);
-    if (el) el.style.left = '10px';
-  });
-
-  runRace();
-}
-
-function runRace() {
-  const trackWidth = document.getElementById('raceTrackInner').clientWidth - 80;
-  let finished = new Set();
-  let ticks = 0;
-
-  function tick() {
-    ticks++;
-    const allDone = finished.size >= HORSES.length;
-    if (allDone) {
-      cancelAnimationFrame(raceAnimId);
-      setTimeout(() => resolveRace(), 400);
-      return;
-    }
-
-    HORSES.forEach(h => {
-      if (finished.has(h.id)) return;
-      // Randomized speed: base speed ± noise + burst chance
-      const noise = (Math.random() - 0.5) * 0.12;
-      const burst = Math.random() < 0.04 ? 0.25 : 0;
-      // Trait effects
-      let speedMod = 0;
-      if (h.trait === '後半強い' && horsePositions[h.id] > 50) speedMod = 0.06;
-      if (h.trait === 'スタート良好' && horsePositions[h.id] < 30) speedMod = 0.08;
-      if (h.trait === '末脚鋭い' && horsePositions[h.id] > 70) speedMod = 0.10;
-      if (h.trait === '気まぐれ') speedMod = (Math.random() - 0.5) * 0.14;
-
-      const advance = (h.speed + noise + burst + speedMod) * 0.8;
-      horsePositions[h.id] = Math.min(100, horsePositions[h.id] + advance);
-
-      const pxPos = (horsePositions[h.id] / 100) * trackWidth + 10;
-      const el = document.getElementById('hemoji-' + h.id);
-      if (el) el.style.left = pxPos + 'px';
-
-      if (horsePositions[h.id] >= 100 && !finished.has(h.id)) {
-        finished.add(h.id);
-        raceFinishOrder.push(h.id);
-      }
-    });
-
-    if (ticks % 4 === 0) {
-      // Show live rank
-      const sorted = [...HORSES].sort((a,b) => horsePositions[b.id] - horsePositions[a.id]);
-      sorted.forEach((h, rank) => {
-        const pBadge = document.getElementById('hpos-' + h.id);
-        if (pBadge) {
-          pBadge.style.opacity = '1';
-          pBadge.textContent = ['🥇','🥈','🥉','4th','5th','6th'][rank] || (rank+1)+'th';
-        }
-      });
-    }
-
-    raceAnimId = requestAnimationFrame(tick);
+function bjShuffleDeck() {
+  bjDeck = [];
+  for (const s of BJ_SUITS) for (const r of BJ_RANKS) bjDeck.push({r, s});
+  for (let i = bjDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [bjDeck[i], bjDeck[j]] = [bjDeck[j], bjDeck[i]];
   }
-  raceAnimId = requestAnimationFrame(tick);
 }
 
-function resolveRace() {
-  raceRunning = false;
-  const winnerId = raceFinishOrder[0];
-  const winner = HORSES[winnerId];
+function bjCardVal(card) {
+  if (['J','Q','K'].includes(card.r)) return 10;
+  if (card.r === 'A') return 11;
+  return parseInt(card.r);
+}
 
-  // Show winner banner
-  document.getElementById('winnerEmoji').textContent = winner.emoji.slice(-1);
-  document.getElementById('winnerName').textContent = winner.name;
-  document.getElementById('winnerBanner').classList.add('show');
-
-  // Highlight winner card
-  HORSES.forEach(h => {
-    const card = document.getElementById('hcard-' + h.id);
-    card.classList.remove('sel', 'winner-card');
-    if (h.id === winnerId) card.classList.add('winner-card');
-  });
-
-  // Payout
-  const msg = document.getElementById('horseMsg');
-  document.getElementById('raceStatusDot').className = 'race-status-dot';
-  document.getElementById('raceStatusText').textContent = `${winner.name} が優勝！`;
-
-  if (horseSelected.has(winnerId)) {
-    const payout = Math.floor(bets.horse * winner.odds);
-    balance += payout; updateBalanceUI(); saveBalance();
-    msg.className = 'result-msg win';
-    msg.textContent = `🏆 ${winner.name} が優勝！ +¥${payout.toLocaleString()} (×${winner.odds})`;
-    addXp(Math.floor(winner.odds * 5));
-    confettiEffect();
-    showToast(`+¥${payout.toLocaleString()}`, 'win');
-  } else {
-    msg.className = 'result-msg loss';
-    msg.textContent = `${winner.name} が優勝 — ハズレ`;
-    addXp(2);
-    showToast('ハズレ…', 'loss');
+function bjHandTotal(hand) {
+  let total = 0, aces = 0;
+  for (const c of hand) {
+    total += bjCardVal(c);
+    if (c.r === 'A') aces++;
   }
-
-  document.getElementById('horseBetBtn').disabled = false;
-  horseSelected = new Set();
-  // Re-render odds grid to clear selections
-  setTimeout(() => {
-    buildOddsGrid();
-    buildRaceTrack();
-    // Restore winner highlight
-    const wc = document.getElementById('hcard-' + winnerId);
-    if (wc) {
-      wc.classList.add('winner-card');
-      const pb = document.getElementById('hpos-' + winnerId);
-      if (pb) { pb.style.opacity='1'; pb.textContent='🥇'; }
-    }
-  }, 100);
+  while (total > 21 && aces > 0) { total -= 10; aces--; }
+  return total;
 }
 
-// ══════════════════════════════════════════════════════════════
-// HI-LO
-// ══════════════════════════════════════════════════════════════
-const HL_DECK = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-const HL_SUITS = ['♠','♥','♦','♣'];
-let hlCard = null, hlStreak = 0, hlActive = false;
-
-function hlRandCard() {
-  const r=HL_DECK[Math.floor(Math.random()*HL_DECK.length)];
-  const s=HL_SUITS[Math.floor(Math.random()*HL_SUITS.length)];
-  return {r,s};
-}
-function hlVal(c){ if(['J','Q','K'].includes(c.r)) return 10; if(c.r==='A') return 1; return parseInt(c.r); }
-function makeHLCardEl(card) {
-  const isRed=card.s==='♥'||card.s==='♦';
-  const d=document.createElement('div');
-  d.className='hilo-card-big'+(isRed?' red':'');
-  d.innerHTML=`<div style="font-size:16px;font-weight:700">${card.r}</div><div class="hilo-card-big-suit">${card.s}</div>`;
+function bjMakeCardEl(card) {
+  const isRed = card.s === '♥' || card.s === '♦';
+  const d = document.createElement('div');
+  d.className = 'hilo-card-big' + (isRed ? ' red' : '');
+  d.innerHTML = `<div style="font-size:16px;font-weight:700">${card.r}</div><div class="hilo-card-big-suit">${card.s}</div>`;
   return d;
 }
 
-function hiloInit() {
-  hlCard=null; hlStreak=0; hlActive=false;
-  document.getElementById('hiloCardPrev').innerHTML='';
-  document.getElementById('hiloCardNext').innerHTML='';
-  document.getElementById('hiloBtns').style.opacity='0.4'; document.getElementById('hiloBtns').style.pointerEvents='none';
-  document.getElementById('hiloMsg').className='result-msg neutral'; document.getElementById('hiloMsg').textContent='最初のカードを引きます';
-  document.getElementById('hiloStreak').textContent='0';
-  document.getElementById('hiloMult').textContent='1.5';
-  document.getElementById('hiloDealBtn').textContent='カードを引く 🎴'; document.getElementById('hiloDealBtn').disabled=false;
+function bjMakeBackEl() {
+  const d = document.createElement('div');
+  d.className = 'bj-card-back';
+  d.textContent = '🂠';
+  return d;
 }
 
-function hiloStart() {
-  if (!hlActive) {
-    if (balance<bets.hilo){showToast('残高が足りません');return;}
-    balance-=bets.hilo; updateBalanceUI(); saveBalance();
-    hlCard=hlRandCard(); hlStreak=0; hlActive=true;
-    document.getElementById('hiloCardPrev').innerHTML='';
-    const nextEl=document.getElementById('hiloCardNext');
-    nextEl.innerHTML=''; nextEl.appendChild(makeHLCardEl(hlCard));
-    document.getElementById('hiloBtns').style.opacity='1'; document.getElementById('hiloBtns').style.pointerEvents='all';
-    document.getElementById('hiloMsg').textContent='HIGH か LOW かを選んでください';
-    document.getElementById('hiloDealBtn').textContent='やめて精算する'; document.getElementById('hiloDealBtn').disabled=false;
-  } else {
-    // Cash out
-    const mult = Math.min(8, 1.5 + hlStreak * 0.5);
-    const win = Math.floor(bets.hilo * mult);
-    balance += win; updateBalanceUI(); saveBalance();
-    addXp(hlStreak * 5 + 3);
-    document.getElementById('hiloMsg').className='result-msg win';
-    document.getElementById('hiloMsg').textContent=`精算！ ×${mult.toFixed(1)} +¥${win.toLocaleString()}`;
-    showToast(`+¥${win.toLocaleString()}`,'win');
-    if(hlStreak>=3) confettiEffect();
-    hiloInit(); return;
+function bjRenderHands(hideDealer) {
+  const dc = document.getElementById('bjDealerCards');
+  const pc = document.getElementById('bjPlayerCards');
+  dc.innerHTML = ''; pc.innerHTML = '';
+  bjDealerHand.forEach((c, i) => {
+    dc.appendChild(hideDealer && i === 1 ? bjMakeBackEl() : bjMakeCardEl(c));
+  });
+  bjPlayerHand.forEach(c => pc.appendChild(bjMakeCardEl(c)));
+  document.getElementById('bjPlayerTotal').textContent = bjHandTotal(bjPlayerHand);
+  document.getElementById('bjDealerTotal').textContent = hideDealer
+    ? bjCardVal(bjDealerHand[0])
+    : bjHandTotal(bjDealerHand);
+}
+
+function bjSetBtns(enabled) {
+  const opacity = enabled ? '1' : '0.35';
+  const pe = enabled ? 'all' : 'none';
+  document.getElementById('bjHitBtn').style.opacity = opacity;
+  document.getElementById('bjHitBtn').style.pointerEvents = pe;
+  document.getElementById('bjStandBtn').style.opacity = opacity;
+  document.getElementById('bjStandBtn').style.pointerEvents = pe;
+}
+
+function bjInit() {
+  bjActive = false;
+  document.getElementById('bjDealerCards').innerHTML = '';
+  document.getElementById('bjPlayerCards').innerHTML = '';
+  document.getElementById('bjPlayerTotal').textContent = '—';
+  document.getElementById('bjDealerTotal').textContent = '—';
+  document.getElementById('bjMsg').className = 'result-msg neutral';
+  document.getElementById('bjMsg').textContent = 'カードを配ります';
+  bjSetBtns(false);
+  document.getElementById('bjDealBtn').disabled = false;
+}
+
+function bjDeal() {
+  if (balance < bets.blackjack) { showToast('残高が足りません'); return; }
+  balance -= bets.blackjack; updateBalanceUI(); saveBalance();
+  bjShuffleDeck();
+  bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
+  bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
+  bjActive = true;
+  document.getElementById('bjDealBtn').disabled = true;
+  bjRenderHands(true);
+  const msg = document.getElementById('bjMsg');
+  msg.className = 'result-msg neutral';
+  const playerTotal = bjHandTotal(bjPlayerHand);
+  if (playerTotal === 21) {
+    const dealerTotal = bjHandTotal(bjDealerHand);
+    bjRenderHands(false);
+    if (dealerTotal === 21) {
+      msg.textContent = '引き分け（プッシュ）';
+      balance += bets.blackjack; updateBalanceUI(); saveBalance();
+      addXp(2);
+    } else {
+      const win = Math.floor(bets.blackjack * 1.5);
+      balance += bets.blackjack + win; updateBalanceUI(); saveBalance();
+      msg.className = 'result-msg win';
+      msg.textContent = `🃏 ブラックジャック！ +¥${win.toLocaleString()}`;
+      addXp(15); confettiEffect();
+      showToast(`+¥${win.toLocaleString()}`, 'win');
+    }
+    bjEndRound(); return;
+  }
+  bjSetBtns(true);
+  msg.textContent = 'HIT か STAND を選んでください';
+}
+
+function bjHit() {
+  if (!bjActive) return;
+  bjPlayerHand.push(bjDeck.pop());
+  bjRenderHands(true);
+  const total = bjHandTotal(bjPlayerHand);
+  const msg = document.getElementById('bjMsg');
+  if (total > 21) {
+    bjRenderHands(false);
+    msg.className = 'result-msg loss';
+    msg.textContent = `バスト (${total}) — 負け！`;
+    addXp(2); showToast('バスト…', 'loss');
+    bjEndRound();
+  } else if (total === 21) {
+    bjStand();
   }
 }
 
-function hiloGuess(guess) {
-  if (!hlActive || !hlCard) return;
-  const next = hlRandCard();
-  const prev = hlCard;
-  const prevV=hlVal(prev), nextV=hlVal(next);
-
-  // move card
-  const prevEl=document.getElementById('hiloCardPrev');
-  const nextEl=document.getElementById('hiloCardNext');
-  prevEl.innerHTML=''; prevEl.appendChild(makeHLCardEl(prev));
-  nextEl.innerHTML=''; nextEl.appendChild(makeHLCardEl(next));
-
-  const correct = (guess==='high' && nextV>prevV) || (guess==='low' && nextV<prevV);
-  const msg=document.getElementById('hiloMsg');
-
-  if (nextV===prevV) {
-    // tie = lose
-    balance=Math.max(0,balance); updateBalanceUI(); saveBalance();
-    msg.className='result-msg loss'; msg.textContent=`同じ数 (${next.r}) — 負け！`;
-    addXp(1);
-    hlActive=false; hlStreak=0;
-    document.getElementById('hiloBtns').style.opacity='0.4'; document.getElementById('hiloBtns').style.pointerEvents='none';
-    document.getElementById('hiloDealBtn').textContent='もう一度'; document.getElementById('hiloDealBtn').disabled=false;
-    document.getElementById('hiloStreak').textContent='0'; document.getElementById('hiloMult').textContent='1.5';
-    return;
-  }
-
-  if (correct) {
-    hlStreak++; hlCard=next;
-    const mult=Math.min(8,1.5+hlStreak*0.5);
-    msg.className='result-msg win'; msg.textContent=`✓ 正解！ 連勝 ${hlStreak}`;
-    document.getElementById('hiloStreak').textContent=hlStreak;
-    document.getElementById('hiloMult').textContent=mult.toFixed(1);
-    document.getElementById('hiloDealBtn').textContent='やめて精算する';
-  } else {
-    msg.className='result-msg loss'; msg.textContent=`✗ 不正解 (${next.r}) — 負け！`;
+function bjStand() {
+  if (!bjActive) return;
+  while (bjHandTotal(bjDealerHand) < 17) bjDealerHand.push(bjDeck.pop());
+  bjRenderHands(false);
+  const playerTotal = bjHandTotal(bjPlayerHand);
+  const dealerTotal = bjHandTotal(bjDealerHand);
+  const msg = document.getElementById('bjMsg');
+  if (dealerTotal > 21 || playerTotal > dealerTotal) {
+    const win = bets.blackjack;
+    balance += bets.blackjack + win; updateBalanceUI(); saveBalance();
+    msg.className = 'result-msg win';
+    msg.textContent = `勝ち！ (${playerTotal} vs ${dealerTotal}) +¥${win.toLocaleString()}`;
+    addXp(10); confettiEffect();
+    showToast(`+¥${win.toLocaleString()}`, 'win');
+  } else if (playerTotal === dealerTotal) {
+    balance += bets.blackjack; updateBalanceUI(); saveBalance();
+    msg.className = 'result-msg neutral';
+    msg.textContent = `引き分け (${playerTotal}) — プッシュ`;
     addXp(2);
-    hlActive=false; hlStreak=0; hlCard=null;
-    document.getElementById('hiloBtns').style.opacity='0.4'; document.getElementById('hiloBtns').style.pointerEvents='none';
-    document.getElementById('hiloDealBtn').textContent='もう一度'; document.getElementById('hiloDealBtn').disabled=false;
-    document.getElementById('hiloStreak').textContent='0'; document.getElementById('hiloMult').textContent='1.5';
+  } else {
+    msg.className = 'result-msg loss';
+    msg.textContent = `負け (${playerTotal} vs ${dealerTotal})`;
+    addXp(2); showToast('負け…', 'loss');
   }
+  bjEndRound();
+}
+
+function bjEndRound() {
+  bjActive = false;
+  bjSetBtns(false);
+  document.getElementById('bjDealBtn').disabled = false;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2209,184 +1926,6 @@ function startBankTimer() {
   }, 1000);
 }
 
-
-
-// ══════════════════════════════════════════════════════════════
-// ADMIN — HORSE EDITOR
-// ══════════════════════════════════════════════════════════════
-const HORSE_CFG_KEY = 'royale_horse_cfg';
-
-function getHorseCfg() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(HORSE_CFG_KEY));
-    if (saved && saved.length === 6) return saved;
-  } catch {}
-  // Default from HORSES
-  return HORSES.map(h => ({ name: h.name, emoji: h.emoji, odds: h.odds, speed: h.speed, trait: h.trait, color: h.color }));
-}
-function saveHorseCfg(cfg) { localStorage.setItem(HORSE_CFG_KEY, JSON.stringify(cfg)); }
-
-// Apply saved config to HORSES at startup and after edit
-function applyHorseCfg() {
-  const cfg = getHorseCfg();
-  cfg.forEach((c, i) => {
-    HORSES[i].name  = c.name;
-    HORSES[i].emoji = c.emoji;
-    HORSES[i].odds  = c.odds;
-    HORSES[i].speed = c.speed;
-    HORSES[i].trait = c.trait;
-  });
-}
-
-function renderHorseEditor() {
-  const cfg = getHorseCfg();
-  const container = document.getElementById('adm-horse-editor');
-  if (!container) return;
-  container.innerHTML = cfg.map((h, i) => `
-    <div style="padding:14px 16px;border-bottom:1px solid rgba(196,163,90,0.1);${i===cfg.length-1?'border-bottom:none':''}">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-size:20px">${h.emoji.slice(-1)}</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--gold2)">${h.name}</span>
-        <span style="font-size:11px;color:var(--muted);margin-left:auto">馬 ${i+1}</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div>
-          <label class="label" style="font-size:10px">名前</label>
-          <input class="input" id="he-name-${i}" value="${h.name}" style="padding:8px 10px;font-size:13px">
-        </div>
-        <div>
-          <label class="label" style="font-size:10px">特徴・個性</label>
-          <input class="input" id="he-trait-${i}" value="${h.trait}" style="padding:8px 10px;font-size:13px">
-        </div>
-        <div>
-          <label class="label" style="font-size:10px">オッズ（倍率）</label>
-          <input class="input" type="number" id="he-odds-${i}" value="${h.odds}" min="1.1" max="99" step="0.1" style="padding:8px 10px;font-size:13px;font-family:'DM Mono',monospace">
-        </div>
-        <div>
-          <label class="label" style="font-size:10px">勝率（速度 0.5〜1.0）</label>
-          <input class="input" type="number" id="he-speed-${i}" value="${h.speed}" min="0.5" max="1.0" step="0.01" style="padding:8px 10px;font-size:13px;font-family:'DM Mono',monospace">
-        </div>
-      </div>
-    </div>
-  `).join('') + `
-    <div style="padding:14px 16px;border-top:1px solid rgba(196,163,90,0.15);display:flex;gap:8px;align-items:center">
-      <button class="btn btn-primary" style="flex:1" onclick="saveHorseEditor()">💾 変更を保存</button>
-      <button class="btn btn-ghost btn-sm" onclick="resetHorseDefaults()">リセット</button>
-      <div id="he-msg" style="font-size:12px;color:var(--muted2);margin-left:8px"></div>
-    </div>
-  `;
-}
-
-function saveHorseEditor() {
-  const cfg = getHorseCfg();
-  for (let i = 0; i < 6; i++) {
-    const name  = document.getElementById('he-name-'+i)?.value.trim();
-    const trait = document.getElementById('he-trait-'+i)?.value.trim();
-    const odds  = parseFloat(document.getElementById('he-odds-'+i)?.value);
-    const speed = parseFloat(document.getElementById('he-speed-'+i)?.value);
-    if (!name || isNaN(odds) || isNaN(speed)) continue;
-    if (odds < 1.1 || odds > 99) { document.getElementById('he-msg').textContent = `馬${i+1}: オッズは1.1〜99`; return; }
-    if (speed < 0.5 || speed > 1.0) { document.getElementById('he-msg').textContent = `馬${i+1}: 速度は0.5〜1.0`; return; }
-    cfg[i].name = name; cfg[i].trait = trait; cfg[i].odds = odds; cfg[i].speed = speed;
-  }
-  saveHorseCfg(cfg);
-  applyHorseCfg();
-  const msg = document.getElementById('he-msg');
-  msg.textContent = '✓ 保存しました';
-  msg.style.color = 'var(--green)';
-  setTimeout(() => { msg.textContent = ''; }, 2000);
-  renderHorseEditor();
-}
-
-function resetHorseDefaults() {
-  if (!confirm('馬の設定をデフォルトに戻しますか？')) return;
-  localStorage.removeItem(HORSE_CFG_KEY);
-  // Restore defaults
-  const defaults = [
-    { name:'サンダーボルト', emoji:'🟥🐴', color:'#ef4444', odds:2.0,  speed:0.88, trait:'安定型' },
-    { name:'ムーンシャドウ', emoji:'🟦🐴', color:'#3b82f6', odds:3.5,  speed:0.80, trait:'後半強い' },
-    { name:'ゴールデンウィング',emoji:'🟨🐴',color:'#f59e0b', odds:2.8,  speed:0.84, trait:'スタート良好' },
-    { name:'ダークホース',   emoji:'⬛🐴', color:'#6b7280', odds:7.0,  speed:0.70, trait:'大穴候補' },
-    { name:'サクラストーム', emoji:'🟩🐴', color:'#10b981', odds:4.5,  speed:0.77, trait:'末脚鋭い' },
-    { name:'スターライト',   emoji:'🟪🐴', color:'#8b5cf6', odds:5.5,  speed:0.74, trait:'気まぐれ' },
-  ];
-  defaults.forEach((d, i) => Object.assign(HORSES[i], d));
-  saveHorseCfg(defaults);
-  renderHorseEditor();
-  document.getElementById('he-msg').textContent = 'リセットしました';
-}
-
-
-// ── Admin Horse Management ──
-const HORSES_STORAGE_KEY = 'royale_horses_custom';
-
-function loadHorses() {
-  const saved = localStorage.getItem(HORSES_STORAGE_KEY);
-  if (saved) {
-    try {
-      const custom = JSON.parse(saved);
-      custom.forEach((h, i) => { if (HORSES[i]) Object.assign(HORSES[i], h); });
-    } catch(e) {}
-  }
-}
-
-function admRenderHorses() {
-  const list = document.getElementById('adm-horse-list');
-  if (!list) return;
-  list.innerHTML = HORSES.map((h, i) => `
-    <div class="horse-editor-row">
-      <span style="font-size:18px">${h.emoji.slice(-1)}</span>
-      <input id="adm-hname-${i}" value="${h.name}" placeholder="馬名">
-      <input id="adm-htrait-${i}" value="${h.trait}" placeholder="特徴">
-      <input id="adm-hodds-${i}" type="number" value="${h.odds}" step="0.1" min="1.1" max="99" placeholder="倍率">
-      <input id="adm-hspeed-${i}" type="number" value="${h.speed}" step="0.01" min="0.3" max="1" placeholder="速度">
-      <span style="font-size:16px;cursor:pointer;opacity:.5;padding:0 4px" title="色" onclick="cyclHorseColor(${i})">🎨</span>
-    </div>
-  `).join('');
-}
-
-function cyclHorseColor(i) {
-  const colors = ['#ef4444','#3b82f6','#f59e0b','#6b7280','#10b981','#8b5cf6','#ec4899','#14b8a6'];
-  const cur = colors.indexOf(HORSES[i].color);
-  HORSES[i].color = colors[(cur + 1) % colors.length];
-  admRenderHorses();
-}
-
-function admSaveHorses() {
-  const updates = HORSES.map((h, i) => {
-    const name  = document.getElementById('adm-hname-'+i)?.value.trim()  || h.name;
-    const trait = document.getElementById('adm-htrait-'+i)?.value.trim() || h.trait;
-    const odds  = parseFloat(document.getElementById('adm-hodds-'+i)?.value)  || h.odds;
-    const speed = parseFloat(document.getElementById('adm-hspeed-'+i)?.value) || h.speed;
-    if (name)  HORSES[i].name  = name;
-    if (trait) HORSES[i].trait = trait;
-    if (odds >= 1.1 && odds <= 99) HORSES[i].odds = Math.round(odds*10)/10;
-    if (speed >= 0.3 && speed <= 1) HORSES[i].speed = Math.round(speed*100)/100;
-    return { name: HORSES[i].name, trait: HORSES[i].trait, odds: HORSES[i].odds, speed: HORSES[i].speed, color: HORSES[i].color };
-  });
-  localStorage.setItem(HORSES_STORAGE_KEY, JSON.stringify(updates));
-  const m = document.getElementById('adm-horse-msg');
-  m.textContent = '✓ 変更を保存しました'; m.style.color = 'var(--green)';
-  admRenderHorses();
-}
-
-function admResetHorses() {
-  localStorage.removeItem(HORSES_STORAGE_KEY);
-  // Reset to defaults
-  const defaults = [
-    { name:'サンダーボルト', emoji:'🟥🐴', color:'#ef4444', odds:2.0, speed:0.88, trait:'安定型' },
-    { name:'ムーンシャドウ', emoji:'🟦🐴', color:'#3b82f6', odds:3.5, speed:0.80, trait:'後半強い' },
-    { name:'ゴールデンウィング',emoji:'🟨🐴',color:'#f59e0b', odds:2.8, speed:0.84, trait:'スタート良好' },
-    { name:'ダークホース',   emoji:'⬛🐴', color:'#6b7280', odds:7.0, speed:0.70, trait:'大穴候補' },
-    { name:'サクラストーム', emoji:'🟩🐴', color:'#10b981', odds:4.5, speed:0.77, trait:'末脚鋭い' },
-    { name:'スターライト',   emoji:'🟪🐴', color:'#8b5cf6', odds:5.5, speed:0.74, trait:'気まぐれ' },
-  ];
-  defaults.forEach((d, i) => Object.assign(HORSES[i], d));
-  admRenderHorses();
-  const m = document.getElementById('adm-horse-msg');
-  m.textContent = '↩ デフォルトに戻しました'; m.style.color = 'var(--muted2)';
-}
-
 // ══════════════════════════════════════════════════════════════
 // ADMIN
 // ══════════════════════════════════════════════════════════════
@@ -2409,12 +1948,10 @@ function checkAdmin() {
 function openAdminPanel() {
   document.getElementById('admin-panel-overlay').classList.add('show');
   renderAdminPanel();
-  renderHorseEditor();
 }
 function closeAdminPanel() { document.getElementById('admin-panel-overlay').classList.remove('show'); }
 
 function renderAdminPanel() {
-  admRenderHorses();
   const users=allUsersCache||{}, names=Object.keys(users);
   const suspended=names.filter(n=>users[n].suspended).length;
   const totalBal=names.reduce((s,n)=>s+(users[n].balance||0),0);
@@ -2440,7 +1977,8 @@ function renderAdminPanel() {
 }
 
 function admMsg(msg,ok=true){const e=document.getElementById('adm-msg');e.textContent=msg;e.style.color=ok?'var(--green)':'var(--red)';}
-function admGetTarget(){const t=document.getElementById('adm-target').value.trim();if(!t){admMsg('ユーザー名を入力',false);return null;}if(!allUsersCache||!allUsersCache[t]){admMsg('存在しないユーザー',false);return null;}return t;}
+function admGetTarget(){const t=document.getElementById('adm-target').value.trim();
+                        if(!t){admMsg('ユーザー名を入力',false);return null;}if(!allUsersCache||!allUsersCache[t]){admMsg('存在しないユーザー',false);return null;}return t;}
 function admToggle(name){const u=allUsersCache||{};u[name].suspended=!u[name].suspended;fbSet('users/'+name+'/suspended',u[name].suspended);admMsg(name+' を'+(u[name].suspended?'停止':'解除'));renderAdminPanel();}
 function admQuickConfiscate(name){if(!allUsersCache||!allUsersCache[name])return;allUsersCache[name].balance=0;fbSet('users/'+name+'/balance',0);admMsg(name+' の通貨を没収');renderAdminPanel();}
 function admSuspend(){const t=admGetTarget();if(!t)return;if(!allUsersCache[t])return;allUsersCache[t].suspended=true;fbSet('users/'+t+'/suspended',true);admMsg(t+' を停止');renderAdminPanel();}
